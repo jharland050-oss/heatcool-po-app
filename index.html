@@ -706,13 +706,32 @@
       : '';
   }
 
-  /* Convert a File to a base64 data-URL */
-  function toBase64(file) {
+  /* Compress + resize an image File, then return a base64 JPEG data-URL.
+     Max dimension 900px, quality 0.65 → typical phone photo goes from
+     3-8 MB down to ~60-120 KB, well within EmailJS limits. */
+  function compressImage(file) {
     return new Promise((resolve, reject) => {
-      const r = new FileReader();
-      r.onload  = () => resolve(r.result);
-      r.onerror = reject;
-      r.readAsDataURL(file);
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = evt => {
+        const img = new Image();
+        img.onerror = reject;
+        img.onload = () => {
+          const MAX = 900;
+          let { width, height } = img;
+          if (width > MAX || height > MAX) {
+            if (width > height) { height = Math.round(height * MAX / width);  width = MAX; }
+            else                { width  = Math.round(width  * MAX / height); height = MAX; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width  = width;
+          canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.65));
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
     });
   }
 
@@ -733,7 +752,7 @@
       const params = Object.fromEntries(fd.entries());
 
       /* Attach photos as base64 img tags (up to 8) */
-      const b64Photos = await Promise.all(photoFiles.map(toBase64));
+      const b64Photos = await Promise.all(photoFiles.map(compressImage));
       b64Photos.forEach((src, i) => {
         params[`photo${i + 1}`] = `<img src="${src}" style="max-width:100%;margin:4px 0;" />`;
       });
