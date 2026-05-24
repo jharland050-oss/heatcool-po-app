@@ -1,4 +1,4 @@
-const CACHE = 'hcm-po-v1';
+const CACHE = 'hcm-po-v2';
 const SHELL = [
   './index.html',
   './manifest.json',
