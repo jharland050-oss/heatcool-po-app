@@ -742,52 +742,36 @@
       const propType = f.storeyType === 'Other' ? (f.storeyTypeOther || 'Other') : (f.storeyType || '—');
       const certReq  = f.electricalCertRequired ? 'Yes' : 'No';
       const circuit  = (f.circuit || '—') + (f.circuitAmps ? ' / ' + f.circuitAmps + 'A' : '');
-      const s = v => v || '—';
+
+      /* Plain text message — EmailJS escapes HTML in variables so we keep this as text */
+      const message =
+        'HEATCOOL MASTERS — ELECTRICAL PURCHASE ORDER\n\n' +
+        'JOB DETAILS\n' +
+        'Date:      ' + (f.jobDate || '—') + '\n' +
+        'Installer: ' + (f.installer || '—') + '\n\n' +
+        'UNIT INFORMATION\n' +
+        'Brand & Model: ' + (f.brandModel || '—') + '\n' +
+        'Install Type:  ' + (f.installType || '—') + '\n' +
+        'Unit Type:     ' + unitType + '\n\n' +
+        'INSTALL INFORMATION\n' +
+        'Property Type:              ' + propType + '\n' +
+        'Indoor Unit Location:       ' + (f.indoorLocation || '—') + '\n' +
+        'Outdoor Unit Location:      ' + (f.outdoorLocation || '—') + '\n' +
+        'Switchboard Location:       ' + (f.switchboardLocation || '—') + '\n' +
+        'Circuit:                    ' + circuit + '\n' +
+        'Indoor Fan Power Required:  ' + (f.indoorFanPower || '—') + '\n' +
+        'Electrical Certificate Req: ' + certReq + '\n\n' +
+        'OTHER INFORMATION\n' +
+        (f.otherInfo || '—');
 
       const b64Photos = await Promise.all(photoFiles.map(compressImage));
-      const photosHtml = b64Photos.length
-        ? '<br>' + b64Photos.map(src =>
-            `<img src="${src}" style="max-width:100%;display:block;margin:6px 0;border-radius:4px;" />`
-          ).join('')
-        : '';
 
-      const row = (label, val) =>
-        `<tr><td style="padding:7px 16px;color:#555;font-size:13px;width:45%;">${label}</td>` +
-        `<td style="padding:7px 16px;font-size:13px;">${val}</td></tr>`;
-      const rowAlt = (label, val) =>
-        `<tr style="background:#f8f9fa;"><td style="padding:7px 16px;color:#555;font-size:13px;width:45%;">${label}</td>` +
-        `<td style="padding:7px 16px;font-size:13px;">${val}</td></tr>`;
-      const heading = t =>
-        `<tr style="background:#e8eef7;"><td colspan="2" style="padding:8px 16px;font-weight:700;font-size:12px;color:#1a3a6b;letter-spacing:.8px;text-transform:uppercase;">${t}</td></tr>`;
+      /* Send photos as plain data URIs — template uses <img src="{{photo1}}" /> */
+      const params = { message, to_email: 'james@heatcoolgroup.com.au' };
+      b64Photos.forEach((src, i) => { params[`photo${i + 1}`] = src; });
+      params.photoCount = b64Photos.length ? `${b64Photos.length} photo(s) attached` : '';
 
-      const message = `
-<div style="font-family:Arial,sans-serif;max-width:600px;">
-  <div style="background:#1a3a6b;padding:16px 20px;border-radius:6px 6px 0 0;">
-    <h2 style="margin:0;color:#fff;font-size:18px;">HEATCOOL MASTERS</h2>
-    <p style="margin:4px 0 0;color:#a8c4e0;font-size:13px;">Electrical Purchase Order</p>
-  </div>
-  <table style="width:100%;border-collapse:collapse;background:#fff;">
-    ${heading('Job Details')}
-    ${row('Job Date', s(f.jobDate))}
-    ${rowAlt('Installer', s(f.installer))}
-    ${heading('Unit Information')}
-    ${row('Brand &amp; Model', s(f.brandModel))}
-    ${rowAlt('Install Type', s(f.installType))}
-    ${row('Unit Type', unitType)}
-    ${heading('Install Information')}
-    ${row('Property Type', propType)}
-    ${rowAlt('Indoor Unit Location', s(f.indoorLocation))}
-    ${row('Outdoor Unit Location', s(f.outdoorLocation))}
-    ${rowAlt('Switchboard Location', s(f.switchboardLocation))}
-    ${row('Circuit', circuit)}
-    ${rowAlt('Indoor Fan Power Required', s(f.indoorFanPower))}
-    ${row('Electrical Certificate Required', certReq)}
-    ${(f.otherInfo || photosHtml) ? heading('Other Information') +
-      `<tr><td colspan="2" style="padding:10px 16px;font-size:13px;">${f.otherInfo || ''}${photosHtml}</td></tr>` : ''}
-  </table>
-</div>`.trim();
-
-      await emailjs.send('service_m3oa0vv', 'template_n6z5p4g', { message, to_email: 'james@heatcoolgroup.com.au' });
+      await emailjs.send('service_m3oa0vv', 'template_n6z5p4g', params);
 
       status.textContent = '✓ Form submitted — confirmation sent to james@heatcoolgroup.com.au.';
       status.className = 'form-status success';
