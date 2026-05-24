@@ -215,7 +215,9 @@
       color: var(--text);
       outline: none;
       transition: box-shadow 0.15s, background 0.15s;
-      resize: vertical;
+      resize: none;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     .field-group input:focus,
@@ -475,15 +477,13 @@
       <div class="form-section" id="sec-job">
         <h2 class="section-heading">Job Details</h2>
         <div class="section-card">
-          <div class="field-grid">
-            <div class="field-group">
-              <label for="job-date">Job Date</label>
-              <input type="date" id="job-date" name="jobDate" />
-            </div>
-            <div class="field-group">
-              <label for="installer">Installer</label>
-              <input type="text" id="installer" name="installer" placeholder="Full name" />
-            </div>
+          <div class="field-group">
+            <label for="job-date">Job Date</label>
+            <input type="date" id="job-date" name="jobDate" />
+          </div>
+          <div class="field-group">
+            <label for="installer">Installer</label>
+            <input type="text" id="installer" name="installer" placeholder="Full name" />
           </div>
         </div>
       </div>
@@ -592,7 +592,9 @@
       <div class="form-section" id="sec-other">
         <h2 class="section-heading">Other Information</h2>
         <div class="section-card">
-          <textarea name="otherInfo" rows="5" placeholder="Any additional notes, special requirements, or instructions…"></textarea>
+          <div class="field-group">
+            <textarea name="otherInfo" style="min-height:120px;" placeholder="Any additional notes, special requirements, or instructions…"></textarea>
+          </div>
         </div>
       </div>
 
