@@ -1,6 +1,5 @@
-const CACHE = 'hcm-po-v2';
+const CACHE = 'hcm-po-v3';
 const SHELL = [
-  './index.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -22,12 +21,17 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  /* Network-first for EmailJS + Google Fonts (need live connection to send) */
-  if (e.request.url.includes('emailjs') || e.request.url.includes('fonts.g')) {
+  /* Network-first for index.html, EmailJS, and Google Fonts — always get latest */
+  if (
+    e.request.url.includes('emailjs') ||
+    e.request.url.includes('fonts.g') ||
+    e.request.url.includes('index.html') ||
+    e.request.url.endsWith('/')
+  ) {
     e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
     return;
   }
-  /* Cache-first for everything else (app shell) */
+  /* Cache-first for icons and manifest */
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
       const clone = res.clone();
