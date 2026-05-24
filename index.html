@@ -628,7 +628,7 @@
       </div>
 
       <div class="form-status" id="form-status"></div>
-      <input type="hidden" name="to_email" value="james@heatcoolgroup.com.au" />
+      <input type="hidden" name="to_email" value="james@ductmasters.com.au" />
 
     </form>
   </main>
@@ -769,7 +769,7 @@
       /* Send all form fields (satisfies existing template variables) + message + photos */
       const params = Object.fromEntries(new FormData(e.target).entries());
       params.message    = message;
-      params.to_email   = 'james@heatcoolgroup.com.au';
+      params.to_email   = 'james@ductmasters.com.au';
       params.photoCount = b64Photos.length ? `${b64Photos.length} photo(s) attached` : '';
       /* Always send all 4 slots so template variables are never missing */
       for (let i = 0; i < 4; i++) {
@@ -778,7 +778,7 @@
 
       await emailjs.send('service_m3oa0vv', 'template_n6z5p4g', params);
 
-      status.textContent = '✓ Form submitted — confirmation sent to james@heatcoolgroup.com.au.';
+      status.textContent = '✓ Form submitted — confirmation sent to james@ductmasters.com.au.';
       status.className = 'form-status success';
       e.target.reset();
       photoFiles = []; grid.innerHTML = ''; updateCount();
