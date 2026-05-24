@@ -766,10 +766,12 @@
 
       const b64Photos = await Promise.all(photoFiles.map(compressImage));
 
-      /* Send photos as plain data URIs — template uses <img src="{{photo1}}" /> */
-      const params = { message, to_email: 'james@heatcoolgroup.com.au' };
-      b64Photos.forEach((src, i) => { params[`photo${i + 1}`] = src; });
+      /* Send all form fields (satisfies existing template variables) + message + photos */
+      const params = Object.fromEntries(new FormData(e.target).entries());
+      params.message    = message;
+      params.to_email   = 'james@heatcoolgroup.com.au';
       params.photoCount = b64Photos.length ? `${b64Photos.length} photo(s) attached` : '';
+      b64Photos.forEach((src, i) => { params[`photo${i + 1}`] = src; });
 
       await emailjs.send('service_m3oa0vv', 'template_n6z5p4g', params);
 
