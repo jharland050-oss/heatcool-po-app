@@ -767,10 +767,16 @@
       ].join('\n');
 
       const b64Photos = await Promise.all(photoFiles.map(compressImage));
-      b64Photos.forEach((src, i) => {
-        params[`photo${i + 1}`] = `<img src="${src}" style="max-width:100%;margin:4px 0;" />`;
-      });
       params.photoCount = photoFiles.length ? `${photoFiles.length} photo(s) attached` : 'No photos attached';
+
+      /* Embed photos into otherInfo so they appear in the template's Other Information section */
+      if (b64Photos.length > 0) {
+        const photoHtml = b64Photos
+          .map(src => `<img src="${src}" style="max-width:100%;display:block;margin:6px 0;" />`)
+          .join('');
+        const notesText = params.otherInfo ? params.otherInfo + '<br><br>' : '';
+        params.otherInfo = notesText + `<strong>Photos (${b64Photos.length}):</strong><br>` + photoHtml;
+      }
 
       await emailjs.send('service_m3oa0vv', 'template_n6z5p4g', params);
 
