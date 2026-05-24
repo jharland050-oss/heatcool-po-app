@@ -771,7 +771,10 @@
       params.message    = message;
       params.to_email   = 'james@heatcoolgroup.com.au';
       params.photoCount = b64Photos.length ? `${b64Photos.length} photo(s) attached` : '';
-      b64Photos.forEach((src, i) => { params[`photo${i + 1}`] = src; });
+      /* Always send all 4 slots so template variables are never missing */
+      for (let i = 0; i < 4; i++) {
+        params[`photo${i + 1}`] = b64Photos[i] || '';
+      }
 
       await emailjs.send('service_m3oa0vv', 'template_n6z5p4g', params);
 
