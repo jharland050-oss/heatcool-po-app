@@ -1,7 +1,7 @@
 {
-  "name": "Heatcool Masters – Electrical PO",
-  "short_name": "HCM PO Form",
-  "description": "Electrical purchase order form for Heatcool Masters installers.",
+  "name": "Heatcool Masters",
+  "short_name": "HCM Forms",
+  "description": "Electrical PO and preinspection forms for Heatcool Masters installers.",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
