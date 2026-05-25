@@ -351,8 +351,9 @@
     }
 
     .upload-icon {
-      font-size: 32px;
-      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-bottom: 8px;
     }
 
@@ -718,8 +719,9 @@
     }
 
     .landing-card-icon {
-      font-size: 38px;
-      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-bottom: 14px;
     }
 
@@ -785,12 +787,25 @@
     <div class="landing-body">
       <div class="landing-cards">
         <div class="landing-card" onclick="showPage('po')">
-          <div class="landing-card-icon">📋</div>
+          <div class="landing-card-icon">
+            <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="9" y="5" width="24" height="32" rx="3" stroke="#1a3a6b" stroke-width="2.5"/>
+              <line x1="14" y1="15" x2="28" y2="15" stroke="#1a3a6b" stroke-width="2" stroke-linecap="round"/>
+              <line x1="14" y1="21" x2="28" y2="21" stroke="#1a3a6b" stroke-width="2" stroke-linecap="round"/>
+              <line x1="14" y1="27" x2="22" y2="27" stroke="#1a3a6b" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
           <h2>Electrical PO Form</h2>
           <p>Create a new electrical purchase order</p>
         </div>
         <div class="landing-card" onclick="showPage('inspection')">
-          <div class="landing-card-icon">🔍</div>
+          <div class="landing-card-icon">
+            <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="9" y="5" width="24" height="32" rx="3" stroke="#1a3a6b" stroke-width="2.5"/>
+              <path d="M16 4h10a2 2 0 0 1 0 8H16a2 2 0 0 1 0-8z" stroke="#1a3a6b" stroke-width="2" fill="none"/>
+              <polyline points="15,23 19,27 27,19" stroke="#1a3a6b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
           <h2>Preinspection Form</h2>
           <p>Log site and unit details before install</p>
         </div>
@@ -959,7 +974,13 @@
         <div class="section-body">
           <div class="upload-zone" id="upload-zone">
             <input type="file" id="photo-input" accept="image/*" multiple />
-            <div class="upload-icon">📷</div>
+            <div class="upload-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 5v18" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M11 12l7-7 7 7" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 26v3a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2v-3" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </div>
             <p>Drag photos here or <span>browse files</span></p>
             <small>Up to 4 photos &middot; JPG, PNG, HEIC</small>
           </div>
@@ -1188,7 +1209,13 @@
         <div class="section-body">
           <div class="upload-zone" id="insp-upload-zone">
             <input type="file" id="insp-photo-input" accept="image/*" multiple />
-            <div class="upload-icon">📷</div>
+            <div class="upload-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 5v18" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M11 12l7-7 7 7" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 26v3a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2v-3" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </div>
             <p>Drag photos here or <span>browse files</span></p>
             <small>Up to 4 photos &middot; JPG, PNG, HEIC</small>
           </div>
