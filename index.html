@@ -1275,28 +1275,45 @@
     try {
       const params = Object.fromEntries(new FormData(e.target).entries());
 
-      /* Build materials HTML table from dynamic rows */
+      /* Build plain-text message (EmailJS escapes HTML — keep this as plain text only) */
+      params.message = [
+        `Inspection Date:     ${params.inspDate        || '—'}`,
+        `Installer:           ${params.inspInstaller   || '—'}`,
+        '',
+        '── SITE DETAILS ──',
+        `Site Address:        ${params.inspAddress     || '—'}`,
+        `Property Type:       ${params.inspStorey      || '—'}${params.inspStoreyOther ? ' (' + params.inspStoreyOther + ')' : ''}`,
+        `Floorplan Provided:  ${params.inspFloorplan   || '—'}`,
+        '',
+        '── UNIT LOCATIONS ──',
+        `Indoor Location:     ${params.inspIndoorLoc   || '—'}`,
+        `Outdoor Location:    ${params.inspOutdoorLoc  || '—'}`,
+        '',
+        '── UNIT INFORMATION ──',
+        `Brand & Model:       ${params.inspBrandModel  || '—'}`,
+        `Unit Type:           ${params.inspUnitType    || '—'}${params.inspUnitTypeOther ? ' (' + params.inspUnitTypeOther + ')' : ''}`,
+        `Install Type:        ${params.inspInstallType || '—'}`,
+        `PO Reference:        ${params.inspPoRef       || '—'}`,
+        `Supplier:            ${params.inspSupplier    || '—'}`,
+        '',
+        '── NOTES ──',
+        params.inspNotes || '—',
+      ].join('\n');
+
+      params.installer = params.inspInstaller || '—';
+      params.to_email  = 'james@ductmasters.com.au';
+
+      /* Build plain-text materials table */
       const matRows = document.querySelectorAll('#mat-rows .mat-row');
       if (matRows.length > 0) {
-        let t = '<table style="width:100%;border-collapse:collapse;font-size:14px;">'
-              + '<tr style="background:#1a3a6b;color:#fff;">'
-              + '<th style="padding:8px;text-align:left;">Material</th>'
-              + '<th style="padding:8px;text-align:left;">Qty</th>'
-              + '<th style="padding:8px;text-align:left;">Unit</th>'
-              + '<th style="padding:8px;text-align:left;">Stock</th></tr>';
-        matRows.forEach((row, i) => {
-          const bg = i % 2 === 0 ? '#f8fafc' : '#fff';
-          const name  = row.querySelector('[name^="matName"]')?.value  || '';
-          const qty   = row.querySelector('[name^="matQty"]')?.value   || '';
-          const unit  = row.querySelector('[name^="matUnit"]')?.value  || '';
-          const stock = row.querySelector('[name^="matStock"]')?.value || '';
-          t += `<tr style="background:${bg};">
-            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${name}</td>
-            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${qty}</td>
-            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${unit}</td>
-            <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${stock}</td></tr>`;
+        let t = 'Material             Qty    Unit        Stock\n' + '─'.repeat(50) + '\n';
+        matRows.forEach(row => {
+          const name  = (row.querySelector('[name^="matName"]')?.value  || '').padEnd(20);
+          const qty   = (row.querySelector('[name^="matQty"]')?.value   || '').padEnd(6);
+          const unit  = (row.querySelector('[name^="matUnit"]')?.value  || '').padEnd(11);
+          const stock =  row.querySelector('[name^="matStock"]')?.value || '';
+          t += `${name} ${qty} ${unit} ${stock}\n`;
         });
-        t += '</table>';
         params.materials = t;
       } else {
         params.materials = 'No materials listed.';
@@ -1515,6 +1532,31 @@
       /* Collect form fields */
       const fd = new FormData(e.target);
       const params = Object.fromEntries(fd.entries());
+
+      /* Build plain-text message (EmailJS escapes HTML — keep as plain text only) */
+      params.message = [
+        `Job Date:              ${params.jobDate             || '—'}`,
+        `Installer:             ${params.installer           || '—'}`,
+        '',
+        '── UNIT INFORMATION ──',
+        `Brand & Model:         ${params.brandModel          || '—'}`,
+        `Install Type:          ${params.installType         || '—'}`,
+        `Unit Type:             ${params.unitType            || '—'}${params.unitTypeOther ? ' (' + params.unitTypeOther + ')' : ''}`,
+        '',
+        '── INSTALL INFORMATION ──',
+        `Property Type:         ${params.storeyType          || '—'}${params.storeyTypeOther ? ' (' + params.storeyTypeOther + ')' : ''}`,
+        `Indoor Location:       ${params.indoorLocation      || '—'}`,
+        `Outdoor Location:      ${params.outdoorLocation     || '—'}`,
+        `Switchboard Location:  ${params.switchboardLocation || '—'}`,
+        `Circuit:               ${params.circuit             || '—'}`,
+        `Circuit Amps:          ${params.circuitAmps         || '—'}`,
+        `Indoor Fan Power:      ${params.indoorFanPower      || '—'}`,
+        '',
+        '── OTHER INFORMATION ──',
+        params.otherInfo || '—',
+      ].join('\n');
+
+      params.to_email = 'james@ductmasters.com.au';
 
       /* Compress photos and always send 4 slots to avoid EmailJS "corrupted variables" */
       const b64Photos = await Promise.all(photoFiles.map(compressImage));
