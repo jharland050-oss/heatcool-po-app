@@ -755,6 +755,7 @@
         grid-column: 1 / -2;
         grid-row: 2;
       }
+      input, textarea, select { font-size: 16px !important; }
     }
   </style>
 </head>
@@ -960,7 +961,7 @@
             <input type="file" id="photo-input" accept="image/*" multiple />
             <div class="upload-icon">📷</div>
             <p>Drag photos here or <span>browse files</span></p>
-            <small>Up to 8 photos &middot; JPG, PNG, HEIC</small>
+            <small>Up to 4 photos &middot; JPG, PNG, HEIC</small>
           </div>
           <div class="photo-grid" id="photo-grid"></div>
           <div class="photo-count" id="photo-count"></div>
@@ -1189,7 +1190,7 @@
             <input type="file" id="insp-photo-input" accept="image/*" multiple />
             <div class="upload-icon">📷</div>
             <p>Drag photos here or <span>browse files</span></p>
-            <small>Up to 8 photos &middot; JPG, PNG, HEIC</small>
+            <small>Up to 4 photos &middot; JPG, PNG, HEIC</small>
           </div>
           <div class="photo-grid" id="insp-photo-grid"></div>
           <div class="photo-count" id="insp-photo-count"></div>
@@ -1301,10 +1302,10 @@
         params.materials = 'No materials listed.';
       }
 
-      const b64Photos = await Promise.all(inspPhotoFiles.map(toBase64));
-      b64Photos.forEach((src, i) => {
-        params[`photo${i + 1}`] = `<img src="${src}" style="max-width:100%;margin:4px 0;" />`;
-      });
+      const b64Photos = await Promise.all(inspPhotoFiles.map(compressImage));
+      for (let i = 0; i < 4; i++) {
+        params[`photo${i + 1}`] = b64Photos[i] || '';
+      }
       params.photoCount = inspPhotoFiles.length
         ? `${inspPhotoFiles.length} photo(s) attached`
         : 'No photos attached';
@@ -1418,7 +1419,7 @@
       ? `${inspPhotoFiles.length} photo${inspPhotoFiles.length > 1 ? 's' : ''} selected` : '';
   }
 
-  const MAX_PHOTOS = 8;
+  const MAX_PHOTOS = 4;
   let photoFiles = [];
 
   /* ── Photo upload logic ── */
@@ -1477,13 +1478,25 @@
       : '';
   }
 
-  /* Convert a File to a base64 data-URL */
-  function toBase64(file) {
-    return new Promise((resolve, reject) => {
-      const r = new FileReader();
-      r.onload  = () => resolve(r.result);
-      r.onerror = reject;
-      r.readAsDataURL(file);
+  /* Compress a File to a small JPEG data-URL via Canvas */
+  function compressImage(file) {
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX = 400;
+          let w = img.width, h = img.height;
+          if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+          else        { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.3));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     });
   }
 
@@ -1503,11 +1516,11 @@
       const fd = new FormData(e.target);
       const params = Object.fromEntries(fd.entries());
 
-      /* Attach photos as base64 img tags (up to 8) */
-      const b64Photos = await Promise.all(photoFiles.map(toBase64));
-      b64Photos.forEach((src, i) => {
-        params[`photo${i + 1}`] = `<img src="${src}" style="max-width:100%;margin:4px 0;" />`;
-      });
+      /* Compress photos and always send 4 slots to avoid EmailJS "corrupted variables" */
+      const b64Photos = await Promise.all(photoFiles.map(compressImage));
+      for (let i = 0; i < 4; i++) {
+        params[`photo${i + 1}`] = b64Photos[i] || '';
+      }
       params.photoCount = photoFiles.length
         ? `${photoFiles.length} photo(s) attached`
         : 'No photos attached';
