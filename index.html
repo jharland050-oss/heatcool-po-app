@@ -148,6 +148,8 @@
       margin-bottom: 12px;
     }
 
+    .meta-wide { grid-column: 1 / -1; }
+
     .meta-field label {
       display: block;
       font-size: 13px;
@@ -867,6 +869,10 @@
         <label for="installer">Installer</label>
         <input type="text" id="installer" name="installer" placeholder="Full name" />
       </div>
+      <div class="meta-field meta-wide">
+        <label for="po-number">PO Number</label>
+        <input type="text" id="po-number" name="poNumber" placeholder="e.g. PO-12345" autocomplete="off" />
+      </div>
     </div>
 
     <div class="form-body">
@@ -953,15 +959,23 @@
         <div class="section-body">
 
           <div class="pill-group">
-            <label class="pill-label">Property Type</label>
+            <label class="pill-label">Exterior Material</label>
             <div class="pills">
               <label class="pill">
-                <input type="radio" name="storeyType" value="Single Story" />
-                <span>Single Story</span>
+                <input type="radio" name="storeyType" value="Brick Veneer" />
+                <span>Brick Veneer</span>
               </label>
               <label class="pill">
-                <input type="radio" name="storeyType" value="Double Story" />
-                <span>Double Story</span>
+                <input type="radio" name="storeyType" value="Double Brick" />
+                <span>Double Brick</span>
+              </label>
+              <label class="pill">
+                <input type="radio" name="storeyType" value="Weatherboard" />
+                <span>Weatherboard</span>
+              </label>
+              <label class="pill">
+                <input type="radio" name="storeyType" value="Cladding" />
+                <span>Cladding</span>
               </label>
               <label class="pill pill-other">
                 <input type="radio" name="storeyType" value="Other" id="storey-other-radio" />
@@ -1799,9 +1813,9 @@
 
   /* Compress a File to a small JPEG data-URL via Canvas */
   /* ── PDF attachment ──
-     Builds a PDF of the submitted form and adds it as params.pdf (base64 data URL).
+     Builds a PDF of the submitted form and adds it as params.pdf (plain base64, no data: prefix - EmailJS drops the attachment otherwise).
      EmailJS template needs a "Variable Attachment" with parameter name: pdf */
-  const PDF_BUDGET = 46000;   /* keep the whole EmailJS request under the 50 KB free-plan limit */
+  const PDF_BUDGET = 450000;  /* EmailJS Personal plan: 500 KB attachment limit */
 
   function buildFormPdf({ title, message, materials, photos, includePhotos }) {
     const { jsPDF } = window.jspdf;
@@ -1895,7 +1909,7 @@
     if (!window.jspdf) return;
     try {
       const size = () => JSON.stringify(params).length;
-      const toUrl = doc => 'data:application/pdf;base64,' + doc.output('datauristring').split(',')[1];
+      const toUrl = doc => doc.output('datauristring').split(',')[1];
       params.pdf = toUrl(buildFormPdf({ ...opts, includePhotos: true }));
       if (size() > PDF_BUDGET) params.pdf = toUrl(buildFormPdf({ ...opts, includePhotos: false }));
       if (size() > PDF_BUDGET) params.pdf = '';
@@ -1948,6 +1962,7 @@
       params.message = [
         `Job Date:              ${params.jobDate             || '—'}`,
         `Installer:             ${params.installer           || '—'}`,
+        `PO Number:             ${params.poNumber            || '—'}`,
         '',
         '── UNIT INFORMATION ──',
         `Unit Type:             ${params.unitType            || '—'}${params.unitTypeOther ? ' (' + params.unitTypeOther + ')' : ''}`,
@@ -1955,7 +1970,7 @@
         `Install Type:          ${params.installType         || '—'}`,
         '',
         '── INSTALL INFORMATION ──',
-        `Property Type:         ${params.storeyType          || '—'}${params.storeyTypeOther ? ' (' + params.storeyTypeOther + ')' : ''}`,
+        `Exterior Material:     ${params.storeyType          || '—'}${params.storeyTypeOther ? ' (' + params.storeyTypeOther + ')' : ''}`,
         `Roof Storey:           ${params.roofStorey          || '—'}`,
         `Roof Type:             ${[params.roofPitch, params.roofMaterial].filter(Boolean).join(', ') || '—'}`,
         `Indoor Location:       ${params.indoorLocation      || '—'}`,
@@ -1986,7 +2001,7 @@
 
       attachPdf(params, {
         title: 'Electrical Purchase Order',
-        fileName: ['Electrical-PO', safeName(params.installer), params.jobDate].filter(Boolean).join('_') + '.pdf',
+        fileName: ['Electrical-PO', safeName(params.poNumber), safeName(params.installer), params.jobDate].filter(Boolean).join('_') + '.pdf',
         message: params.message,
         photos: b64Photos
       });
