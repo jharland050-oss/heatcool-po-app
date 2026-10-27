@@ -1517,9 +1517,9 @@
         params.materials = 'No materials listed.';
       }
 
-      const b64Photos = await Promise.all(inspPhotoFiles.map(compressImage));
+      const photos = await preparePhotos(inspPhotoFiles);
       for (let i = 0; i < 4; i++) {
-        params[`photo${i + 1}`] = b64Photos[i] || '';
+        params[`photo${i + 1}`] = photos.email[i] || '';
       }
       params.photoCount = inspPhotoFiles.length
         ? `${inspPhotoFiles.length} photo(s) attached`
@@ -1530,7 +1530,7 @@
         fileName: ['Preinspection', safeName(params.inspAddress || params.inspInstaller), params.inspDate].filter(Boolean).join('_') + '.pdf',
         message: params.message,
         materials: matRows.length ? params.materials : '',
-        photos: b64Photos
+        photos: photos.pdf
       });
 
       await emailjs.send('service_zmypclq', 'template_zg9g6kh', params);
@@ -1815,7 +1815,7 @@
   /* ── PDF attachment ──
      Builds a PDF of the submitted form and adds it as params.pdf (plain base64, no data: prefix - EmailJS drops the attachment otherwise).
      EmailJS template needs a "Variable Attachment" with parameter name: pdf */
-  const PDF_BUDGET = 450000;  /* EmailJS Personal plan: 500 KB attachment limit */
+  const PDF_BUDGET = 480000;  /* base64 chars; EmailJS Personal plan: 500 KB attachment limit */
 
   function buildFormPdf({ title, message, materials, photos, includePhotos }) {
     const { jsPDF } = window.jspdf;
@@ -1908,7 +1908,7 @@
     params.pdf = ''; params.pdf_name = opts.fileName;
     if (!window.jspdf) return;
     try {
-      const size = () => JSON.stringify(params).length;
+      const size = () => params.pdf.length;
       const toUrl = doc => doc.output('datauristring').split(',')[1];
       params.pdf = toUrl(buildFormPdf({ ...opts, includePhotos: true }));
       if (size() > PDF_BUDGET) params.pdf = toUrl(buildFormPdf({ ...opts, includePhotos: false }));
@@ -1921,25 +1921,59 @@
 
   const safeName = s => String(s || '').replace(/[^\w .-]+/g, '').trim().replace(/\s+/g, '-');
 
-  function compressImage(file) {
+  /* Photos: load once, then render two copies.
+     - Email body: small previews. EmailJS caps non-attachment variables at 50 KB on every plan,
+       so all body previews together must fit EMAIL_PHOTO_BUDGET.
+     - PDF: as sharp as the budget allows; the PDF_PHOTO_BUDGET is shared between the photos. */
+  const EMAIL_PHOTO_BUDGET = 34000; /* base64 characters for all email-body previews together */
+  const PDF_PHOTO_BUDGET = 400000;   /* base64 characters for all PDF photos together */
+  const PDF_PHOTO_STEPS = [[1600, 0.8], [1400, 0.75], [1200, 0.7], [1000, 0.65], [800, 0.6], [600, 0.5], [400, 0.3]];
+
+  function loadImage(file) {
     return new Promise(resolve => {
       const reader = new FileReader();
       reader.onload = e => {
         const img = new Image();
-        img.onload = () => {
-          const MAX = 400;
-          let w = img.width, h = img.height;
-          if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
-          else        { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', 0.3));
-        };
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
         img.src = e.target.result;
       };
+      reader.onerror = () => resolve(null);
       reader.readAsDataURL(file);
     });
+  }
+
+  function renderImage(img, MAX, quality) {
+    if (!img) return '';
+    let w = img.width, h = img.height;
+    if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+    else        { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    return canvas.toDataURL('image/jpeg', quality);
+  }
+
+  const EMAIL_PHOTO_STEPS = [[500, 0.5], [400, 0.4], [400, 0.3], [320, 0.3], [240, 0.3]];
+
+  /* Best quality that fits within budget */
+  function renderFit(img, budget, steps) {
+    if (!img) return '';
+    let out = '';
+    for (const [max, q] of steps) {
+      out = renderImage(img, max, q);
+      if (out.length <= budget) return out;
+    }
+    return out;
+  }
+
+  async function preparePhotos(files) {
+    const imgs = await Promise.all(files.map(loadImage));
+    const n = Math.max(1, imgs.length);
+    return {
+      email: imgs.map(img => renderFit(img, Math.floor(EMAIL_PHOTO_BUDGET / n), EMAIL_PHOTO_STEPS)),
+      pdf:   imgs.map(img => renderFit(img, Math.floor(PDF_PHOTO_BUDGET / n), PDF_PHOTO_STEPS))
+    };
   }
 
   /* ── Submit ── */
@@ -1991,9 +2025,9 @@
       params.to_email = 'james@heatcoolgroup.com.au';
 
       /* Compress photos and always send 4 slots to avoid EmailJS "corrupted variables" */
-      const b64Photos = await Promise.all(photoFiles.map(compressImage));
+      const photos = await preparePhotos(photoFiles);
       for (let i = 0; i < 4; i++) {
-        params[`photo${i + 1}`] = b64Photos[i] || '';
+        params[`photo${i + 1}`] = photos.email[i] || '';
       }
       params.photoCount = photoFiles.length
         ? `${photoFiles.length} photo(s) attached`
@@ -2003,7 +2037,7 @@
         title: 'Electrical Purchase Order',
         fileName: ['Electrical-PO', safeName(params.poNumber), safeName(params.installer), params.jobDate].filter(Boolean).join('_') + '.pdf',
         message: params.message,
-        photos: b64Photos
+        photos: photos.pdf
       });
 
       await emailjs.send('service_zmypclq', 'template_n6z5p4g', params);
