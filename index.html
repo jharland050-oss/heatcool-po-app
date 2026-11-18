@@ -661,6 +661,69 @@
 
     .btn-add-material:hover { background: #000; }
 
+    /* ── Duct layout (form card) ── */
+    .duct-intro { font-size: 15px; line-height: 1.45; color: var(--ink); margin: 0 6px; }
+    .duct-note { font-size: 13px; color: var(--ink-soft); margin: -8px 6px 0; }
+    .duct-preview { display: block; width: 100%; padding: 0; background: #fff; border-radius: 22px; overflow: hidden; }
+    .duct-preview svg { display: block; width: 100%; height: auto; max-height: 440px; }
+    .duct-stats { font-size: 15px; line-height: 1.45; color: var(--ink); margin: 0 6px; }
+    .duct-stats .warn { color: var(--c-red-dk); font-weight: 600; }
+    .duct-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .duct-btn { flex: 1 1 auto; min-height: 50px; padding: 10px 20px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 15px; font-weight: 500; }
+    .duct-btn:hover { background: #000; }
+    .duct-btn.ghost { background: rgba(255,255,255,0.45); color: var(--ink); }
+    .duct-btn.ghost:hover { background: rgba(255,255,255,0.7); }
+    .duct-btn.danger { flex: 0 0 auto; background: transparent; color: var(--c-red-dk); box-shadow: inset 0 0 0 1.5px currentColor; }
+
+    .duct-attach { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-top: 12px; padding: 16px 20px; border-radius: 26px; background: var(--c-amber); color: var(--ink); font-size: 15px; font-weight: 500; }
+    .duct-attach[hidden] { display: none; }
+    .duct-attach span { flex: 1 1 200px; }
+    .duct-attach button { min-height: 40px; padding: 8px 16px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 500; }
+    .duct-attach button.ghost { background: rgba(255,255,255,0.5); color: var(--ink); }
+
+    /* ── Duct layout editor (full screen) ── */
+    body.de-open { overflow: hidden; }
+    .de { position: fixed; inset: 0; z-index: 100; background: #000; color: #fff; overflow-y: auto; -webkit-overflow-scrolling: touch;
+          padding: calc(env(safe-area-inset-top, 0px) + 12px) 12px calc(env(safe-area-inset-bottom, 0px) + 28px); }
+    .de[hidden] { display: none; }
+    .de-inner { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+    .de-top { display: flex; align-items: center; gap: 6px; }
+    .de-top h2 { flex: 1; min-width: 0; font-size: 20px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .de-b { min-height: 40px; padding: 8px 15px; border-radius: 999px; background: rgba(255,255,255,0.14); color: #fff; font-size: 14px; font-weight: 500; white-space: nowrap; }
+    .de-b:hover { background: rgba(255,255,255,0.24); }
+    .de-b.on { background: var(--c-cyan); color: #000; }
+    .de-b.pri { background: var(--c-orange); color: #000; }
+    .de-b.danger { background: transparent; color: var(--c-red); box-shadow: inset 0 0 0 1.5px var(--c-red); min-height: 34px; padding: 5px 12px; font-size: 13px; }
+    .de-b.round { width: 40px; padding: 0; font-size: 20px; line-height: 1; }
+    .de-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .de-wrap { background: #fff; border-radius: 18px; overflow: hidden; max-height: 66vh; max-height: 66dvh; min-height: 220px; width: 100%; margin: 0 auto; touch-action: none; }
+    .de-wrap svg { display: block; width: 100%; height: 100%; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    .de-wrap.draw svg { cursor: crosshair; }
+    .de-hint { font-size: 13px; line-height: 1.4; color: var(--white-dim); padding: 0 4px; }
+    .de-card { background: #161616; border-radius: 22px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .de-card h3 { font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .de-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+    .de-fields label { display: block; font-size: 12px; color: var(--white-dim); margin: 0 0 4px 4px; }
+    .de input, .de select { width: 100%; min-height: 44px; padding: 10px 14px; border-radius: 14px; border: 1.5px solid transparent; background: rgba(255,255,255,0.1); color: #fff; font-family: inherit; font-size: 16px; outline: none; }
+    .de select { -webkit-appearance: none; appearance: none; }
+    .de select option { color: #000; }
+    .de input:focus, .de select:focus { border-color: var(--c-cyan); }
+    .de .de-size { width: auto; min-height: 40px; padding: 6px 14px; border-radius: 999px; }
+    .de-val { padding: 11px 4px; font-size: 15px; }
+    .de-muted { font-size: 13px; line-height: 1.45; color: var(--white-dim); }
+    .de-warn { color: var(--c-amber); }
+    .de-link { color: var(--c-cyan); background: none; padding: 0; font-size: inherit; text-decoration: underline; }
+    .de-tbl-wrap { overflow-x: auto; }
+    .de-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .de-tbl th { font-weight: 500; color: var(--white-dim); }
+    .de-tbl th, .de-tbl td { padding: 7px 6px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .de-tbl .num { text-align: right; white-space: nowrap; }
+    .de-tbl tr.click { cursor: pointer; }
+    .de-tbl td.over { color: var(--c-amber); font-weight: 600; }
+    .de-list > div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 14px; }
+    .de-toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); transform: translateX(-50%); z-index: 200; max-width: calc(100% - 32px);
+                background: #fff; color: #000; padding: 12px 20px; border-radius: 999px; font-size: 14px; font-weight: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
+
     .mat-empty {
       text-align: center;
       font-size: 15px;
@@ -695,6 +758,8 @@
 
     .landing-card.c-orange { background: var(--c-orange); }
     .landing-card.c-cyan { background: var(--c-cyan); }
+    .landing-card.c-amber { background: var(--c-amber); }
+    .landing-card.wide { grid-column: 1 / -1; min-height: 200px; }
 
     .landing-card::before {
       content: '';
@@ -788,6 +853,7 @@
       .form-body > .section-card { background: #fff !important; border: 1px solid #ccc; break-inside: avoid; }
       .section-card::before, .section-title::after { display: none; }
       .pill input[type="radio"]:not(:checked) + span { display: none; }
+      .de, .de-toast, .duct-btns, .duct-intro, .duct-note, .duct-attach { display: none !important; }
     }
   </style>
 </head>
@@ -812,6 +878,7 @@
       <button type="button" class="tab" id="nav-home" onclick="showPage('landing')">Home</button>
       <button type="button" class="tab" id="nav-po" onclick="showPage('po')">Electrical PO</button>
       <button type="button" class="tab" id="nav-inspection" onclick="showPage('inspection')">Preinspection</button>
+      <button type="button" class="tab" id="nav-duct" onclick="showPage('duct')">Duct Layout</button>
     </nav>
   </header>
 
@@ -849,6 +916,24 @@
               <rect x="9" y="5" width="24" height="32" rx="4" stroke="#161616" stroke-width="2.2"/>
               <path d="M16 4h10a2 2 0 0 1 0 8H16a2 2 0 0 1 0-8z" stroke="#161616" stroke-width="2" fill="none"/>
               <polyline points="15,23 19,27 27,19" stroke="#161616" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
+        </div>
+        <div class="landing-card c-amber wide" role="button" tabindex="0" onclick="showPage('duct')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('duct')}">
+          <div class="landing-card-head">
+            <h2>Duct Layout</h2>
+            <span class="landing-card-arrow" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6 14L14 6M7 6h7v7" stroke="#161616" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+          <p>Mark up a floor plan with units, outlets and duct runs</p>
+          <div class="landing-card-icon" aria-hidden="true">
+            <svg width="72" height="72" viewBox="0 0 42 42" fill="none">
+              <rect x="5" y="7" width="32" height="28" rx="4" stroke="#161616" stroke-width="2.2"/>
+              <rect x="9" y="12" width="9" height="6" rx="1.5" stroke="#161616" stroke-width="2"/>
+              <path d="M18 15h11v11M13.5 18v10" stroke="#161616" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="29" cy="28" r="3" stroke="#161616" stroke-width="2"/>
+              <circle cx="13.5" cy="30" r="2.6" stroke="#161616" stroke-width="2"/>
             </svg>
           </div>
         </div>
@@ -1393,6 +1478,8 @@
 
     </div><!-- /form-body -->
 
+    <div class="duct-attach" id="insp-duct-note" hidden></div>
+
     <input type="hidden" name="to_email" value="james@heatcoolgroup.com.au" />
     <input type="hidden" name="formType" value="Inspection Information" />
 
@@ -1409,6 +1496,15 @@
 
   </form>
   </div><!-- /page-inspection -->
+
+  <div id="page-duct" style="display:none">
+    <div class="form-body">
+      <div class="section-card" id="duct-card">
+        <div class="section-title">Duct Layout</div>
+        <div class="section-body" id="duct-summary"></div>
+      </div>
+    </div>
+  </div><!-- /page-duct -->
 
 </div>
 
@@ -1498,6 +1594,8 @@
         params.inspNotes || '—',
       ].join('\n');
 
+      if (duct && duct.attach) params.message = params.message.replace('── NOTES ──', ductMessage() + '\n\n── NOTES ──');
+
       params.installer = params.inspInstaller || '—';
       params.to_email  = 'james@heatcoolgroup.com.au';
 
@@ -1517,7 +1615,8 @@
         params.materials = 'No materials listed.';
       }
 
-      const photos = await preparePhotos(inspPhotoFiles);
+      const layout = duct && duct.attach ? await ductPdfData() : null;
+      const photos = await preparePhotos(inspPhotoFiles, layout ? PDF_PHOTO_BUDGET - DUCT_PDF_BUDGET : PDF_PHOTO_BUDGET);
       for (let i = 0; i < 4; i++) {
         params[`photo${i + 1}`] = photos.email[i] || '';
       }
@@ -1530,6 +1629,7 @@
         fileName: ['Preinspection', safeName(params.inspAddress || params.inspInstaller), params.inspDate].filter(Boolean).join('_') + '.pdf',
         message: params.message,
         materials: matRows.length ? params.materials : '',
+        layout,
         photos: photos.pdf
       });
 
@@ -1541,6 +1641,7 @@
       inspPhotoFiles = [];
       inspGrid.innerHTML = '';
       updateInspCount();
+      ductSent();
       const matContainer = document.getElementById('mat-rows');
       matContainer.innerHTML = '';
       const p = document.createElement('p');
@@ -1564,12 +1665,15 @@
     document.getElementById('page-landing').style.display     = page === 'landing'     ? 'block' : 'none';
     document.getElementById('page-po').style.display          = page === 'po'          ? 'block' : 'none';
     document.getElementById('page-inspection').style.display  = page === 'inspection'  ? 'block' : 'none';
+    document.getElementById('page-duct').style.display        = page === 'duct'        ? 'block' : 'none';
 
     document.getElementById('nav-home').classList.toggle('active',       page === 'landing');
     document.getElementById('nav-po').classList.toggle('active',         page === 'po');
     document.getElementById('nav-inspection').classList.toggle('active', page === 'inspection');
+    document.getElementById('nav-duct').classList.toggle('active',       page === 'duct');
+    if (typeof ductRenderSummary === 'function') { ductRenderSummary(); ductRenderInspNote(); }
 
-    const titles = { landing: 'Job<br>Forms', po: 'Electrical<br>PO Form', inspection: 'Pre&shy;inspection<br>Form' };
+    const titles = { landing: 'Job<br>Forms', po: 'Electrical<br>PO Form', inspection: 'Pre&shy;inspection<br>Form', duct: 'Duct<br>Layout' };
     document.getElementById('page-title').innerHTML = titles[page];
 
     window.scrollTo(0, 0);
@@ -1817,7 +1921,7 @@
      EmailJS template needs a "Variable Attachment" with parameter name: pdf */
   const PDF_BUDGET = 480000;  /* base64 chars; EmailJS Personal plan: 500 KB attachment limit */
 
-  function buildFormPdf({ title, message, materials, photos, includePhotos }) {
+  function buildFormPdf({ title, message, materials, layout, photos, includePhotos }) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
     const M = 15, W = 210 - M * 2, PAGE_H = 297;
@@ -1875,6 +1979,38 @@
         if (/^─+$/.test(l.trim())) { doc.setDrawColor(180, 180, 180); doc.setLineWidth(0.2); doc.line(M, y - 1.8, M + W, y - 1.8); y += 2.5; return; }
         doc.text(l.replace(/[^\x20-\x7E]/g, '-'), M, y); y += 4.5;
       });
+    }
+
+    if (layout) {
+      const ip = layout.img ? doc.getImageProperties(layout.img) : null;
+      let iw = W, ih = ip ? W * ip.height / ip.width : 0;
+      if (ih > 180) { ih = 180; iw = ih * ip.width / ip.height; }
+      if (y + ih + 24 > PAGE_H - M) { doc.addPage(); header(); }
+      const heading = (t, gap = 7) => {
+        room(14); y += 3;
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); doc.setTextColor(240, 122, 28);
+        doc.text(t, M, y);
+        doc.setDrawColor(26, 174, 230); doc.setLineWidth(0.4); doc.line(M, y + 1.6, M + W, y + 1.6); y += gap;
+      };
+      heading('DUCT LAYOUT', 5);
+      if (layout.img) {
+        doc.addImage(layout.img, 'JPEG', M + (W - iw) / 2, y, iw, ih);
+        doc.setDrawColor(200, 200, 200); doc.setLineWidth(0.2); doc.rect(M + (W - iw) / 2, y, iw, ih);
+        y += ih + 4;
+      }
+      const mono = lines => {
+        doc.setFont('courier', 'normal'); doc.setFontSize(8.5); doc.setTextColor(22, 22, 22);
+        lines.forEach((l, i) => {
+          room(4.3);
+          doc.setFont('courier', i === 0 && lines.header ? 'bold' : 'normal');
+          doc.text(l.replace(/[^\x20-\x7E]/g, '-'), M, y); y += 4.3;
+        });
+      };
+      if (layout.schedule.length) { heading('OUTLET SCHEDULE'); layout.schedule.header = true; mono(layout.schedule); }
+      if (layout.takeoff.length) { heading('LAYOUT TAKEOFF'); mono(layout.takeoff); }
+      room(10); y += 3;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(120, 120, 120);
+      doc.splitTextToSize(layout.caveat, W).forEach(l => { room(4); doc.text(l, M, y); y += 4; });
     }
 
     const pics = photos.filter(Boolean);
@@ -1967,12 +2103,12 @@
     return out;
   }
 
-  async function preparePhotos(files) {
+  async function preparePhotos(files, pdfBudget = PDF_PHOTO_BUDGET) {
     const imgs = await Promise.all(files.map(loadImage));
     const n = Math.max(1, imgs.length);
     return {
       email: imgs.map(img => renderFit(img, Math.floor(EMAIL_PHOTO_BUDGET / n), EMAIL_PHOTO_STEPS)),
-      pdf:   imgs.map(img => renderFit(img, Math.floor(PDF_PHOTO_BUDGET / n), PDF_PHOTO_STEPS))
+      pdf:   imgs.map(img => renderFit(img, Math.floor(pdfBudget / n), PDF_PHOTO_STEPS))
     };
   }
 
@@ -2062,6 +2198,886 @@
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js');
   }
+</script>
+<input type="file" id="duct-file" accept="image/*,application/pdf,.pdf" hidden onchange="ductAddPlan(this.files[0]); this.value = ''" />
+<div class="de" id="duct-editor" hidden></div>
+
+<script>
+  /* ══════════ Duct layout designer (preinspection) ══════════
+     Adapted from the HCM Project Tracker. Everything is stored in the plan image's own pixel
+     coordinates; duct.scale = pixels per metre. The draft is kept on this device until the form is sent. */
+
+  const DUCT_KEY = 'hcm-duct-draft';
+  const PLAN_SYMBOLS = {
+    indoor:     { label: 'Indoor unit',   short: 'IU',  color: '#e06a10' },
+    outdoor:    { label: 'Outdoor unit',  short: 'ODU', color: '#4b5563' },
+    supply:     { label: 'Supply outlet', short: 'S',   color: '#0b8fc4', sized: true, def: 200 },
+    return:     { label: 'Return air',    short: 'R',   color: '#2a9d63', sized: true, def: 350 },
+    controller: { label: 'Controller',    short: 'C',   color: '#6b4fd8' },
+    zone:       { label: 'Zone damper',   short: 'Z',   color: '#c58a00' },
+    isolator:   { label: 'Isolator',      short: 'ISO', color: '#c62828' },
+    drainpt:    { label: 'Drain point',   short: 'D',   color: '#0b8fc4' },
+    note:       { label: 'Note',          short: '',    color: '#111111' }
+  };
+  const RUN_KINDS = {
+    duct:  { label: 'Duct', color: '#e0940f' },
+    pipe:  { label: 'Refrigerant pipe', color: '#c2410c' },
+    drain: { label: 'Drain', color: '#0b8fc4', dash: true }
+  };
+  const DUCT_SIZES = [150, 200, 250, 300, 350, 400, 450, 500];
+  /* Typical airflow for a residential outlet of each size — a starting point, edit per outlet */
+  const AIRFLOW_BY_SIZE = { 150: 35, 200: 65, 250: 100, 300: 145, 350: 200, 400: 260, 450: 330, 500: 400 };
+  const MAX_DUCT_VELOCITY = 5; /* m/s — above this flexible duct gets noisy */
+  const FLEX_LENGTH = 6;       /* m per length of flexible duct */
+
+  let duct = null;
+  const dui = { tool: 'select', symbol: 'supply', size: '200', sel: null, draw: null, hover: null, scalePts: [], vb: null };
+  let deCtx = null;
+
+  const dEsc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const dUid = () => Math.random().toString(36).slice(2, 10);
+  const dRnd = n => Math.round(n * 10) / 10;
+  const planR = plan => Math.max(plan.w, plan.h) / 55;
+  const dEl = id => document.getElementById(id);
+  const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+  function dToast(msg) {
+    let t = dEl('de-toast');
+    if (!t) { t = document.createElement('div'); t.id = 'de-toast'; t.className = 'de-toast'; document.body.appendChild(t); }
+    t.textContent = msg;
+    t.style.display = '';
+    clearTimeout(dToast.timer);
+    dToast.timer = setTimeout(() => { t.style.display = 'none'; }, 3200);
+  }
+
+  /* ── Draft storage ── */
+  function ductSave() {
+    try {
+      if (duct) localStorage.setItem(DUCT_KEY, JSON.stringify(duct));
+      else localStorage.removeItem(DUCT_KEY);
+    } catch (err) {
+      if (!ductSave.warned) { ductSave.warned = true; dToast('This layout is too big to keep if the app closes — send the form before closing it'); }
+    }
+  }
+  function ductLoad() {
+    try { const d = JSON.parse(localStorage.getItem(DUCT_KEY) || 'null'); if (d && d.photo && d.w) duct = d; } catch (err) { /* no draft */ }
+  }
+
+  function runLength(plan, r) {
+    if (!plan.scale) return 0;
+    let px = 0;
+    for (let i = 1; i < r.points.length; i++) px += Math.hypot(r.points[i][0] - r.points[i - 1][0], r.points[i][1] - r.points[i - 1][1]);
+    return px / plan.scale;
+  }
+  const itemAirflow = it => parseFloat(it.airflow) || AIRFLOW_BY_SIZE[it.size] || 0;
+  const ductVelocity = (lps, mm) => lps && mm ? (lps / 1000) / (Math.PI * Math.pow(mm / 2000, 2)) : 0;
+
+  /* ── Loading a plan ── */
+  function dLoadScript(src) {
+    return new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = () => reject(new Error('Could not load ' + src));
+      document.head.appendChild(s);
+    });
+  }
+  async function loadPdfJs() {
+    if (window.pdfjsLib) return;
+    await dLoadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  /* Plans need more detail than site photos, but the draft must fit in the phone's storage */
+  const PLAN_MAX_PX = 2000;
+  function canvasToPlan(draw, w, h) {
+    const scale = Math.min(1, PLAN_MAX_PX / Math.max(w, h));
+    const c = document.createElement('canvas');
+    c.width = Math.round(w * scale);
+    c.height = Math.round(h * scale);
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, c.width, c.height);
+    draw(ctx, c.width, c.height);
+    return { data: c.toDataURL('image/jpeg', 0.8), w: c.width, h: c.height };
+  }
+  function imageFileToPlan(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); resolve(canvasToPlan((ctx, w, h) => ctx.drawImage(img, 0, 0, w, h), img.width, img.height)); };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not read the image')); };
+      img.src = url;
+    });
+  }
+  async function pdfFileToPlan(file) {
+    await loadPdfJs();
+    const pdf = await window.pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    let pageNo = 1;
+    if (pdf.numPages > 1) {
+      pageNo = parseInt(prompt(`This PDF has ${pdf.numPages} pages. Which page is the floor plan?`, '1'), 10) || 1;
+      pageNo = Math.min(Math.max(pageNo, 1), pdf.numPages);
+    }
+    const page = await pdf.getPage(pageNo);
+    const base = page.getViewport({ scale: 1 });
+    const scale = Math.min(4, PLAN_MAX_PX / Math.max(base.width, base.height));
+    const vp = page.getViewport({ scale });
+    const c = document.createElement('canvas');
+    c.width = Math.round(vp.width);
+    c.height = Math.round(vp.height);
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, c.width, c.height);
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    return { data: c.toDataURL('image/jpeg', 0.8), w: c.width, h: c.height };
+  }
+
+  function ductStart(img, scale) {
+    duct = { photo: img.data, w: img.w, h: img.h, scale: scale || 0, source: scale ? 'grid' : 'plan', job: '', attach: false, systemAirflow: '', items: [], runs: [], created: Date.now() };
+    Object.assign(dui, { tool: scale ? 'symbol' : 'scale', symbol: 'indoor', sel: null, draw: null, hover: null, scalePts: [], vb: null });
+    ductSave();
+    ductOpen();
+  }
+
+  async function ductAddPlan(file) {
+    if (!file) return;
+    if (duct && !confirm('Replace the current layout with this plan? Everything marked on it will be removed.')) return;
+    dToast('Loading plan…');
+    let img;
+    try {
+      img = /pdf/i.test(file.type) || /\.pdf$/i.test(file.name) ? await pdfFileToPlan(file) : await imageFileToPlan(file);
+    } catch (err) {
+      console.error(err);
+      dToast(navigator.onLine ? 'Could not read that file' : 'Connect to the internet the first time you upload a PDF');
+      return;
+    }
+    ductStart(img, 0);
+    dToast('First set the scale: tap two points a known distance apart');
+  }
+
+  /* A blank grid at 50 px per metre — each square is 1 m, heavier lines every 5 m */
+  function ductBlank() {
+    if (duct && !confirm('Replace the current layout with a blank grid? Everything marked on it will be removed.')) return;
+    const PX = 50, W = 24 * PX, H = 16 * PX;
+    const img = canvasToPlan((ctx, w, h) => {
+      for (let x = 0; x <= w; x += PX) { ctx.strokeStyle = x % (PX * 5) ? '#e3e7ec' : '#b9c1cb'; ctx.lineWidth = x % (PX * 5) ? 1 : 2; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+      for (let y = 0; y <= h; y += PX) { ctx.strokeStyle = y % (PX * 5) ? '#e3e7ec' : '#b9c1cb'; ctx.lineWidth = y % (PX * 5) ? 1 : 2; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+      ctx.fillStyle = '#8a94a0'; ctx.font = '22px Arial, sans-serif';
+      ctx.fillText('Grid: each square = 1 m', 14, h - 14);
+    }, W, H);
+    ductStart(img, PX);
+    dToast('Each square is 1 metre. Place the units and outlets, then draw the runs.');
+  }
+
+  function ductRemove() {
+    if (!duct || !confirm('Delete this duct layout and start a new one?')) return;
+    ductClear();
+  }
+  function ductClear() {
+    duct = null;
+    Object.assign(dui, { sel: null, draw: null, hover: null, scalePts: [], vb: null });
+    ductSave();
+    ductRenderSummary();
+    ductRenderInspNote();
+  }
+
+  /* ── Drawing the overlay (shared by the editor, the form preview and the PDF) ── */
+  function planItemSVG(plan, it, selected) {
+    const R = planR(plan), sym = PLAN_SYMBOLS[it.type] || PLAN_SYMBOLS.note, c = sym.color, sw = R * 0.14;
+    const halo = `stroke="#fff" stroke-width="${R * 0.32}" paint-order="stroke" stroke-linejoin="round"`;
+    const text = (t, x, y, size = R * 0.8, fill = '#111') =>
+      `<text x="${x}" y="${y}" font-size="${size}" text-anchor="middle" dominant-baseline="central" font-family="Outfit, Arial, sans-serif" font-weight="600" fill="${fill}" ${halo}>${dEsc(t)}</text>`;
+    const { x, y } = it;
+    let shape = '', below = '';
+    switch (it.type) {
+      case 'supply':
+        shape = `<circle cx="${x}" cy="${y}" r="${R}" fill="${c}" fill-opacity="0.18" stroke="${c}" stroke-width="${sw}"/>
+          <path d="M${x - R * 0.7} ${y}H${x + R * 0.7}M${x} ${y - R * 0.7}V${y + R * 0.7}" stroke="${c}" stroke-width="${sw}"/>`;
+        below = `${it.label || ''}${it.size ? ' · ' + it.size : ''}`;
+        break;
+      case 'return':
+        shape = `<rect x="${x - R * 1.2}" y="${y - R * 0.8}" width="${R * 2.4}" height="${R * 1.6}" rx="${R * 0.15}" fill="${c}" fill-opacity="0.18" stroke="${c}" stroke-width="${sw}"/>
+          <path d="M${x - R * 0.8} ${y - R * 0.4}H${x + R * 0.8}M${x - R * 0.8} ${y}H${x + R * 0.8}M${x - R * 0.8} ${y + R * 0.4}H${x + R * 0.8}" stroke="${c}" stroke-width="${sw * 0.8}"/>`;
+        below = `${it.label || ''}${it.size ? ' · ' + it.size : ''}`;
+        break;
+      case 'indoor':
+        shape = `<rect x="${x - R * 1.7}" y="${y - R * 1.05}" width="${R * 3.4}" height="${R * 2.1}" rx="${R * 0.25}" fill="${c}" fill-opacity="0.2" stroke="${c}" stroke-width="${sw}"/>${text('IU', x, y, R * 0.9, c)}`;
+        below = it.label && it.label !== 'IU' ? it.label : '';
+        break;
+      case 'outdoor':
+        shape = `<rect x="${x - R * 1.4}" y="${y - R * 1.4}" width="${R * 2.8}" height="${R * 2.8}" rx="${R * 0.2}" fill="#fff" fill-opacity="0.85" stroke="${c}" stroke-width="${sw}"/>
+          <circle cx="${x}" cy="${y}" r="${R * 0.95}" fill="none" stroke="${c}" stroke-width="${sw}"/>${text('ODU', x, y, R * 0.6, c)}`;
+        below = it.label && it.label !== 'ODU' ? it.label : '';
+        break;
+      case 'note':
+        shape = text(it.label || 'Note', x, y, R * 0.9);
+        break;
+      default:
+        shape = `<circle cx="${x}" cy="${y}" r="${R * 0.85}" fill="#fff" stroke="${c}" stroke-width="${sw}"/>${text(sym.short, x, y, sym.short.length > 1 ? R * 0.5 : R * 0.8, c)}`;
+        below = it.label && it.label !== sym.short ? it.label : '';
+    }
+    const ring = selected ? `<circle cx="${x}" cy="${y}" r="${R * 2}" fill="none" stroke="#1aaee6" stroke-width="${R * 0.22}" stroke-dasharray="${R * 0.5} ${R * 0.3}"/>` : '';
+    return `<g>${ring}${shape}${below ? text(below, x, y + R * (it.type === 'outdoor' ? 2.2 : it.type === 'indoor' ? 1.9 : 1.8), R * 0.75) : ''}</g>`;
+  }
+
+  function planRunSVG(plan, r, selected) {
+    if (r.points.length < 2) return '';
+    const R = planR(plan), k = RUN_KINDS[r.kind] || RUN_KINDS.duct;
+    const pts = r.points.map(pt => pt.join(',')).join(' ');
+    const w = r.kind === 'duct' ? R * 0.12 + R * 0.28 * ((parseInt(r.size, 10) || 200) / 200) : R * 0.18;
+    /* Label on the longest segment */
+    let best = 1, bestLen = 0;
+    for (let i = 1; i < r.points.length; i++) {
+      const l = Math.hypot(r.points[i][0] - r.points[i - 1][0], r.points[i][1] - r.points[i - 1][1]);
+      if (l > bestLen) { bestLen = l; best = i; }
+    }
+    const [ax, ay] = r.points[best - 1], [bx, by] = r.points[best];
+    const len = runLength(plan, r);
+    const label = [r.kind === 'duct' ? (r.size ? r.size + ' mm' : '') : (r.size || ''), len ? dRnd(len) + ' m' : ''].filter(Boolean).join(' · ');
+    const halo = `stroke="#fff" stroke-width="${R * 0.3}" paint-order="stroke" stroke-linejoin="round"`;
+    return `<g>
+      ${selected ? `<polyline points="${pts}" fill="none" stroke="#1aaee6" stroke-opacity="0.55" stroke-width="${w + R * 0.45}" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
+      <polyline points="${pts}" fill="none" stroke="${k.color}" stroke-opacity="0.9" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" ${k.dash ? `stroke-dasharray="${R * 0.6} ${R * 0.4}"` : ''}/>
+      ${label ? `<text x="${(ax + bx) / 2}" y="${(ay + by) / 2 - R * 0.6}" font-size="${R * 0.65}" text-anchor="middle" font-family="Outfit, Arial, sans-serif" font-weight="600" fill="${k.color}" ${halo}>${dEsc(label)}</text>` : ''}
+      ${selected ? r.points.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${R * 0.45}" fill="#fff" stroke="#1aaee6" stroke-width="${R * 0.15}"/>`).join('') : ''}
+    </g>`;
+  }
+
+  function planLayerSVG(plan, opts = {}) {
+    const R = planR(plan), sel = opts.selected;
+    let out = plan.runs.map(r => planRunSVG(plan, r, sel && sel.kind === 'run' && sel.id === r.id)).join('')
+      + plan.items.map(it => planItemSVG(plan, it, sel && sel.kind === 'item' && sel.id === it.id)).join('');
+    const d = opts.draw;
+    if (d && d.points.length) {
+      const k = RUN_KINDS[d.kind];
+      const pts = [...d.points, ...(opts.hover ? [[opts.hover.x, opts.hover.y]] : [])];
+      out += `<polyline points="${pts.map(p => p.join(',')).join(' ')}" fill="none" stroke="${k.color}" stroke-width="${R * 0.3}" stroke-dasharray="${R * 0.4} ${R * 0.3}" stroke-linecap="round"/>`
+        + d.points.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${R * 0.35}" fill="${k.color}"/>`).join('');
+    }
+    (opts.scalePts || []).forEach(([x, y]) => { out += `<circle cx="${x}" cy="${y}" r="${R * 0.5}" fill="#c62828" stroke="#fff" stroke-width="${R * 0.15}"/>`; });
+    return out;
+  }
+
+  /* ── Design checks & takeoff ── */
+  function planSchedule(plan) {
+    return plan.items.filter(i => i.type === 'supply' || i.type === 'return').map(it => {
+      const run = plan.runs.find(r => r.kind === 'duct' && (r.to === it.id || r.from === it.id));
+      const q = itemAirflow(it);
+      const size = run ? parseInt(run.size, 10) || 0 : 0;
+      return { it, run, q, size, len: run ? runLength(plan, run) : 0, v: ductVelocity(q, size) };
+    });
+  }
+
+  function ductTakeoff(plan = duct) {
+    const out = [];
+    if (!plan) return out;
+    const add = (name, qty, unit) => { if (qty > 0) out.push({ name, qty: String(Math.round(qty * 100) / 100), unit }); };
+    const bySize = {};
+    plan.runs.filter(r => r.kind === 'duct').forEach(r => {
+      const s = parseInt(r.size, 10) || 200;
+      const b = bySize[s] = bySize[s] || { runs: 0, lengths: 0 };
+      b.runs++;
+      b.lengths += Math.max(1, Math.ceil(runLength(plan, r) / FLEX_LENGTH));
+    });
+    Object.keys(bySize).sort((a, b) => a - b).forEach(s => {
+      add(`Flexible duct ${s} mm (${FLEX_LENGTH} m length)`, bySize[s].lengths, 'ea');
+      add(`Takeoff spigot ${s} mm`, bySize[s].runs, 'ea');
+    });
+    const count = (type, name) => {
+      const g = {};
+      plan.items.filter(i => i.type === type).forEach(i => { g[i.size || ''] = (g[i.size || ''] || 0) + 1; });
+      Object.keys(g).sort((a, b) => a - b).forEach(s => add(name + (s ? ` ${s} mm` : ''), g[s], 'ea'));
+    };
+    count('supply', 'Ceiling diffuser');
+    count('return', 'Return air grille & filter');
+    count('zone', 'Zone damper');
+    count('controller', 'Wall controller');
+    count('isolator', 'Isolator');
+    const total = kind => plan.runs.filter(r => r.kind === kind).reduce((n, r) => n + runLength(plan, r), 0);
+    const pipe = total('pipe'), drain = total('drain');
+    if (pipe) { add('Pair coil (size to suit unit)', Math.ceil(pipe + 1), 'm'); add('Interconnecting cable 4-core', Math.ceil(pipe + 1), 'm'); }
+    if (drain) add('Condensate drain', Math.ceil(drain + 1), 'm');
+    return out;
+  }
+
+  function ductStats(plan = duct) {
+    const sched = planSchedule(plan);
+    const supply = sched.filter(s => s.it.type === 'supply');
+    const total = kind => plan.runs.filter(r => r.kind === kind).reduce((n, r) => n + runLength(plan, r), 0);
+    const bySize = {};
+    plan.runs.filter(r => r.kind === 'duct').forEach(r => { const s = parseInt(r.size, 10) || 200; bySize[s] = (bySize[s] || 0) + runLength(plan, r); });
+    return {
+      sched, supply, returns: sched.length - supply.length,
+      totalQ: supply.reduce((n, s) => n + s.q, 0),
+      ductRuns: plan.runs.filter(r => r.kind === 'duct').length,
+      duct: total('duct'), pipe: total('pipe'), drain: total('drain'),
+      ductM: Object.values(bySize).reduce((n, m) => n + Math.ceil(m), 0),
+      bySize: Object.keys(bySize).sort((a, b) => a - b).map(s => `${s} mm ${Math.ceil(bySize[s])} m`),
+      noisy: supply.filter(s => s.v > MAX_DUCT_VELOCITY).length,
+      unducted: sched.filter(s => !s.run).length
+    };
+  }
+
+  /* ── Form card ── */
+  function ductPreviewSVG(plan) {
+    return `<svg viewBox="0 0 ${plan.w} ${plan.h}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <rect width="${plan.w}" height="${plan.h}" fill="#fff"/><image class="duct-img" width="${plan.w}" height="${plan.h}"/>${planLayerSVG(plan)}</svg>`;
+  }
+
+  function ductRenderSummary() {
+    const el = dEl('duct-summary');
+    if (!el) return;
+    if (!duct) {
+      el.innerHTML = `<p class="duct-intro">Mark up the floor plan with the units, outlets and duct runs. Save it as a PDF, or attach it to a preinspection along with its material takeoff.</p>
+        <div class="duct-btns">
+          <button type="button" class="duct-btn" onclick="dEl('duct-file').click()">Upload floor plan</button>
+          <button type="button" class="duct-btn ghost" onclick="ductBlank()">Draw on a grid</button>
+        </div>
+        <p class="duct-note">A photo or PDF of the plan. PDFs need an internet connection the first time.</p>`;
+      return;
+    }
+    const s = ductStats();
+    const parts = [plural(s.supply.length, 'supply outlet'), plural(s.returns, 'return')];
+    if (duct.scale) {
+      if (s.duct) parts.push(`${s.ductM} m duct`);
+      if (s.pipe) parts.push(`${Math.ceil(s.pipe)} m pipe`);
+      if (s.drain) parts.push(`${Math.ceil(s.drain)} m drain`);
+    }
+    const warns = [];
+    if (!duct.scale && duct.runs.length) warns.push('Scale not set, so lengths aren’t measured');
+    if (s.noisy) warns.push(`${plural(s.noisy, 'outlet')} may be noisy`);
+    el.innerHTML = `<div class="field-group"><label for="duct-job">Job / site address</label>
+        <input type="text" id="duct-job" value="${dEsc(duct.job || '')}" placeholder="e.g. 12 Smith St, Ringwood" oninput="duct.job = this.value; ductSave()" /></div>
+      <button type="button" class="duct-preview" onclick="ductOpen()" aria-label="Edit duct layout">${ductPreviewSVG(duct)}</button>
+      <div class="duct-stats">${parts.join(' · ')}${warns.length ? `<br><span class="warn">${warns.join(' · ')}</span>` : ''}</div>
+      <div class="duct-btns">
+        <button type="button" class="duct-btn" onclick="ductOpen()">Edit layout</button>
+        <button type="button" class="duct-btn ghost" onclick="ductSavePdf()">Save PDF</button>
+        <button type="button" class="duct-btn ghost" onclick="ductToInspection()">${duct.attach ? 'Attached to preinspection' : 'Add to preinspection'}</button>
+        <button type="button" class="duct-btn danger" onclick="ductRemove()">Start new</button>
+      </div>`;
+    el.querySelectorAll('.duct-img').forEach(i => i.setAttribute('href', duct.photo));
+  }
+
+  /* Fills the preinspection materials from the takeoff; returns what changed */
+  function ductFillMaterials() {
+    const items = ductTakeoff();
+    const nameOf = r => (r.querySelector('[name^="matName"]').value || '').trim().toLowerCase();
+    const rows = [...document.querySelectorAll('#mat-rows .mat-row')];
+    let added = 0, updated = 0;
+    items.forEach(m => {
+      let row = rows.find(r => nameOf(r) === m.name.toLowerCase());
+      if (row) updated++;
+      else {
+        addMaterialRow();
+        row = dEl('mat-row-' + (matRowCount - 1));
+        rows.push(row);
+        row.querySelector('[name^="matName"]').value = m.name;
+        row.querySelector('[name^="matUnit"]').value = m.unit;
+        added++;
+      }
+      row.querySelector('[name^="matQty"]').value = m.qty;
+    });
+    return [added && `${plural(added, 'material')} added`, updated && `${updated} updated`].filter(Boolean).join(', ');
+  }
+
+  /* Attaches the layout to the preinspection being filled in and copies the takeoff into its materials */
+  function ductToInspection() {
+    if (!duct) return;
+    if (!dEl('duct-editor').hidden) ductClose();
+    duct.attach = true;
+    ductSave();
+    if (duct.source === 'plan') {
+      const yes = document.querySelector('input[name="inspFloorplan"][value="Yes"]');
+      if (yes) yes.checked = true;
+    }
+    if (!document.querySelector('[name="inspAddress"]').value && duct.job) document.querySelector('[name="inspAddress"]').value = duct.job;
+    const changed = ductFillMaterials();
+    showPage('inspection');
+    dEl('mat-rows').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    dToast('Duct layout attached' + (changed ? ` · ${changed} — check the quantities` : ''));
+  }
+
+  function ductRenderInspNote() {
+    const el = dEl('insp-duct-note');
+    if (!el) return;
+    el.hidden = !(duct && duct.attach);
+    if (el.hidden) return;
+    el.innerHTML = `<span>The duct layout${duct.job ? ' for ' + dEsc(duct.job) : ''} will be attached when this form is sent.</span>
+      <button type="button" class="ghost" onclick="showPage('duct')">View</button>
+      <button type="button" onclick="ductDetach()">Don’t attach</button>`;
+  }
+  function ductDetach() { if (duct) { duct.attach = false; ductSave(); } ductRenderInspNote(); }
+  /* After a preinspection is sent the layout stays saved, but is no longer attached */
+  function ductSent() { ductDetach(); ductRenderSummary(); }
+
+  async function ductSavePdf() {
+    if (!duct) return;
+    if (!window.jspdf) { dToast('The PDF tool hasn’t loaded — check the internet connection'); return; }
+    dToast('Making the PDF…');
+    try {
+      const layout = await ductPdfData();
+      const message = [duct.job ? `Job:                 ${duct.job}` : '', `Date:                ${new Date().toLocaleDateString('en-AU')}`, '', ductMessage(true)]
+        .filter((l, i) => l || i === 2).join('\n');
+      const doc = buildFormPdf({ title: 'Duct Layout', message, materials: '', layout, photos: [], includePhotos: false });
+      const name = ['Duct-Layout', safeName(duct.job), new Date().toISOString().slice(0, 10)].filter(Boolean).join('_') + '.pdf';
+      const file = new File([doc.output('blob')], name, { type: 'application/pdf' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title: name }); return; } catch (err) { if (err.name === 'AbortError') return; }
+      }
+      doc.save(name);
+    } catch (err) {
+      console.error(err);
+      dToast('Could not make the PDF');
+    }
+  }
+
+  /* ── Editor ── */
+  function ductOpen() {
+    if (!duct) return;
+    const ed = dEl('duct-editor');
+    ed.hidden = false;
+    document.body.classList.add('de-open');
+    deRender();
+  }
+  function ductClose() {
+    Object.assign(dui, { draw: null, hover: null, scalePts: [] });
+    dEl('duct-editor').hidden = true;
+    document.body.classList.remove('de-open');
+    deCtx = null;
+    ductRenderSummary();
+  }
+
+  function deRender() {
+    const ed = dEl('duct-editor');
+    if (!duct || ed.hidden) return;
+    const keep = ed.scrollTop;
+    const plan = duct, tool = dui.tool;
+    const drawing = ['duct', 'pipe', 'drain'].includes(tool);
+    const tools = [['select', 'Select'], ['symbol', 'Symbols'], ['duct', 'Duct'], ['pipe', 'Pipe'], ['drain', 'Drain'], ['scale', 'Scale']];
+    const hints = {
+      select: 'Tap something to edit it. Drag symbols, or the white points on a selected run, to move them. Drag the plan to move around; pinch to zoom.',
+      symbol: `Tap the plan to place a ${PLAN_SYMBOLS[dui.symbol].label.toLowerCase()}.`,
+      duct: dui.draw ? 'Tap each corner, then tap an outlet to finish (or tap Finish).' : 'Start on the unit or plenum, tap each corner, then tap the outlet.',
+      pipe: dui.draw ? 'Tap each corner, then tap the other unit to finish.' : 'Tap the indoor unit, each corner, then the outdoor unit.',
+      drain: dui.draw ? 'Tap each corner, then tap Finish.' : 'Tap where the drain starts, each corner, then Finish.',
+      scale: dui.scalePts.length ? 'Now tap the second point.' : 'Tap two points a known distance apart (e.g. both ends of a dimensioned wall).'
+    };
+    ed.innerHTML = `<div class="de-inner">
+      <div class="de-top">
+        <h2>Duct layout</h2>
+        <button type="button" class="de-b round" aria-label="Zoom out" onclick="deZoom(1 / 1.4)">−</button>
+        <button type="button" class="de-b round" aria-label="Zoom in" onclick="deZoom(1.4)">+</button>
+        <button type="button" class="de-b" onclick="deFit()">Fit</button>
+        <button type="button" class="de-b pri" onclick="ductClose()">Done</button>
+      </div>
+      <div class="de-row">${tools.map(([t, l]) => `<button type="button" class="de-b ${tool === t ? 'on' : ''}" onclick="deTool('${t}')">${l}</button>`).join('')}</div>
+      ${tool === 'symbol' ? `<div class="de-row">${Object.entries(PLAN_SYMBOLS).map(([k, s]) =>
+        `<button type="button" class="de-b ${dui.symbol === k ? 'on' : ''}" onclick="dui.symbol='${k}'; deRender()">${s.label}</button>`).join('')}</div>` : ''}
+      ${drawing ? `<div class="de-row">
+        ${tool === 'duct' ? `<span class="de-muted">Duct size</span><select class="de-size" onchange="dui.size = this.value">${DUCT_SIZES.map(s => `<option value="${s}" ${String(dui.size) === String(s) ? 'selected' : ''}>${s} mm</option>`).join('')}</select>` : ''}
+        ${dui.draw ? `<button type="button" class="de-b pri" onclick="deFinish()">Finish</button><button type="button" class="de-b" onclick="deCancel()">Cancel</button>` : ''}
+      </div>` : ''}
+      <div class="de-wrap ${tool === 'select' ? '' : 'draw'}" style="aspect-ratio: ${plan.w} / ${plan.h}">
+        <svg id="de-svg" viewBox="0 0 ${plan.w} ${plan.h}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <rect width="${plan.w}" height="${plan.h}" fill="#fff"/>
+          <image id="de-img" width="${plan.w}" height="${plan.h}"/>
+          <g id="de-layer"></g>
+        </svg>
+      </div>
+      <div class="de-hint">${hints[tool]}${tool === 'duct' && !dui.draw ? ' Ending on an outlet uses the outlet’s size.' : ''}</div>
+      <div id="de-panel"></div>
+    </div>`;
+    dEl('de-img').setAttribute('href', plan.photo);
+    deInit();
+    ed.scrollTop = keep;
+  }
+
+  function deInit() {
+    const svg = dEl('de-svg');
+    const plan = duct;
+    deCtx = {};
+    let vb = dui.vb || { x: 0, y: 0, w: plan.w, h: plan.h };
+    const setVB = v => { vb = v; dui.vb = v; svg.setAttribute('viewBox', `${v.x} ${v.y} ${v.w} ${v.h}`); };
+    setVB(vb);
+    deDrawLayer();
+    dePanel();
+
+    const toSvg = (cx, cy) => {
+      const pt = svg.createSVGPoint();
+      pt.x = cx; pt.y = cy;
+      const r = pt.matrixTransform(svg.getScreenCTM().inverse());
+      return { x: dRnd(r.x), y: dRnd(r.y) };
+    };
+    const unitsPerPx = () => { const b = svg.getBoundingClientRect(); return Math.max(vb.w / b.width, vb.h / b.height); };
+    const zoomAt = (factor, at, from = vb) => {
+      const w = Math.min(plan.w * 2, Math.max(plan.w / 15, from.w / factor));
+      const f = from.w / w;
+      setVB({ x: at.x - (at.x - from.x) / f, y: at.y - (at.y - from.y) / f, w, h: from.h / f });
+    };
+    deCtx.zoomAt = zoomAt;
+    deCtx.center = () => ({ x: vb.x + vb.w / 2, y: vb.y + vb.h / 2 });
+
+    const pointers = new Map();
+    let drag = null, pinch = null;
+
+    svg.onpointerdown = e => {
+      e.preventDefault();
+      try { svg.setPointerCapture(e.pointerId); } catch (err) { /* pointer already gone */ }
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        pinch = { dist: Math.hypot(a.x - b.x, a.y - b.y), at: toSvg((a.x + b.x) / 2, (a.y + b.y) / 2), vb: { ...vb } };
+        drag = null;
+        return;
+      }
+      const pt = toSvg(e.clientX, e.clientY);
+      const start = { cx: e.clientX, cy: e.clientY, vb: { ...vb }, moved: false, pt };
+      if (dui.tool === 'select') {
+        const hit = planHit(plan, pt, unitsPerPx() * 22);
+        if (hit && hit.type === 'item') {
+          dui.sel = { kind: 'item', id: hit.it.id };
+          drag = { ...start, kind: 'item', it: hit.it, dx: hit.it.x - pt.x, dy: hit.it.y - pt.y };
+        } else if (hit && hit.type === 'vertex') {
+          drag = { ...start, kind: 'vertex', run: hit.run, index: hit.index };
+        } else if (hit && hit.type === 'run') {
+          dui.sel = { kind: 'run', id: hit.run.id };
+          drag = { ...start, kind: 'pan' };
+        } else {
+          drag = { ...start, kind: 'pan', deselect: true };
+        }
+        deDrawLayer();
+        dePanel();
+      } else {
+        drag = { ...start, kind: 'tap' };
+      }
+    };
+
+    svg.onpointermove = e => {
+      if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pinch && pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        zoomAt(Math.hypot(a.x - b.x, a.y - b.y) / pinch.dist, pinch.at, pinch.vb);
+        return;
+      }
+      if (!drag) {
+        /* Live preview of the next segment while drawing (mouse / pen hover) */
+        if (dui.draw) { dui.hover = toSvg(e.clientX, e.clientY); deDrawLayer(); }
+        return;
+      }
+      if (Math.hypot(e.clientX - drag.cx, e.clientY - drag.cy) > 6) drag.moved = true;
+      if (!drag.moved) return;
+      if (drag.kind === 'item') {
+        const pt = toSvg(e.clientX, e.clientY);
+        drag.it.x = dRnd(pt.x + drag.dx);
+        drag.it.y = dRnd(pt.y + drag.dy);
+        plan.runs.forEach(r => {
+          if (r.from === drag.it.id) r.points[0] = [drag.it.x, drag.it.y];
+          if (r.to === drag.it.id) r.points[r.points.length - 1] = [drag.it.x, drag.it.y];
+        });
+        deDrawLayer();
+      } else if (drag.kind === 'vertex') {
+        const pt = toSvg(e.clientX, e.clientY);
+        drag.run.points[drag.index] = [pt.x, pt.y];
+        deDrawLayer();
+      } else {
+        const b = svg.getBoundingClientRect();
+        const s = Math.max(drag.vb.w / b.width, drag.vb.h / b.height);
+        setVB({ ...drag.vb, x: drag.vb.x - (e.clientX - drag.cx) * s, y: drag.vb.y - (e.clientY - drag.cy) * s });
+      }
+    };
+
+    svg.onpointerup = svg.onpointercancel = e => {
+      pointers.delete(e.pointerId);
+      if (pinch) { if (pointers.size < 2) pinch = null; drag = null; return; }
+      const d = drag;
+      drag = null;
+      if (!d) return;
+      if (d.kind === 'item' || d.kind === 'vertex') { if (d.moved) { ductSave(); dePanel(); } return; }
+      if (d.kind === 'pan' && !d.moved && d.deselect) { dui.sel = null; deDrawLayer(); dePanel(); return; }
+      if (d.kind === 'tap' && !d.moved) planTap(plan, d.pt, unitsPerPx() * 22);
+    };
+
+    svg.onwheel = e => {
+      e.preventDefault();
+      zoomAt(Math.pow(1.0015, -e.deltaY), toSvg(e.clientX, e.clientY));
+    };
+    svg.ondblclick = () => { if (dui.draw) deFinish(); };
+  }
+
+  function segDist(p, a, b) {
+    const dx = b[0] - a[0], dy = b[1] - a[1];
+    const t = dx || dy ? Math.max(0, Math.min(1, ((p.x - a[0]) * dx + (p.y - a[1]) * dy) / (dx * dx + dy * dy))) : 0;
+    return Math.hypot(p.x - (a[0] + t * dx), p.y - (a[1] + t * dy));
+  }
+
+  function planHit(plan, pt, tol) {
+    const R = planR(plan);
+    const sel = dui.sel && dui.sel.kind === 'run' ? plan.runs.find(r => r.id === dui.sel.id) : null;
+    if (sel) {
+      const index = sel.points.findIndex(([x, y]) => Math.hypot(x - pt.x, y - pt.y) <= Math.max(tol, R * 0.6));
+      /* Ends attached to a symbol move with the symbol, so only free points can be dragged */
+      if (index >= 0 && !(index === 0 && sel.from) && !(index === sel.points.length - 1 && sel.to)) return { type: 'vertex', run: sel, index };
+    }
+    for (let i = plan.items.length - 1; i >= 0; i--) {
+      const it = plan.items[i];
+      if (Math.hypot(it.x - pt.x, it.y - pt.y) <= Math.max(tol, R * 1.5)) return { type: 'item', it };
+    }
+    for (let i = plan.runs.length - 1; i >= 0; i--) {
+      const r = plan.runs[i];
+      for (let j = 1; j < r.points.length; j++) if (segDist(pt, r.points[j - 1], r.points[j]) <= Math.max(tol, R * 0.5)) return { type: 'run', run: r };
+    }
+    return null;
+  }
+
+  function planTap(plan, pt, tol) {
+    const tool = dui.tool;
+    if (tool === 'symbol') {
+      const type = dui.symbol, sym = PLAN_SYMBOLS[type];
+      let label = sym.short;
+      if (type === 'supply' || type === 'return') label = sym.short + (plan.items.filter(i => i.type === type).length + 1);
+      if (type === 'note') { label = prompt('Note text'); if (!label) return; }
+      const it = { id: dUid(), type, x: pt.x, y: pt.y, label, size: sym.sized ? String(sym.def) : '', airflow: '', note: '' };
+      plan.items.push(it);
+      dui.sel = { kind: 'item', id: it.id };
+      ductSave(); deDrawLayer(); dePanel();
+      return;
+    }
+    if (tool === 'scale') {
+      dui.scalePts.push([pt.x, pt.y]);
+      if (dui.scalePts.length === 2) {
+        const [a, b] = dui.scalePts;
+        const px = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        const m = parseFloat(prompt('Real distance between the two points, in metres:', ''));
+        dui.scalePts = [];
+        if (m > 0 && px > 0) {
+          plan.scale = px / m;
+          dui.tool = 'symbol';
+          ductSave(); deRender();
+          dToast('Scale set — lengths are now measured in metres. Next, place the units and outlets.');
+          return;
+        }
+        dToast('Scale not set — try again');
+      }
+      deRender();
+      return;
+    }
+    if (['duct', 'pipe', 'drain'].includes(tool)) {
+      const R = planR(plan);
+      const snap = plan.items.slice().reverse().find(it => Math.hypot(it.x - pt.x, it.y - pt.y) <= Math.max(tol, R * 1.5));
+      const point = snap ? [snap.x, snap.y] : [pt.x, pt.y];
+      if (!dui.draw) {
+        dui.draw = { kind: tool, points: [point], from: snap ? snap.id : null };
+        deRender();
+        return;
+      }
+      dui.draw.points.push(point);
+      if (snap && snap.id !== dui.draw.from) { dui.draw.to = snap.id; deFinish(); return; }
+      deDrawLayer();
+    }
+  }
+
+  function deDrawLayer() {
+    const layer = dEl('de-layer');
+    if (!layer || !duct) return;
+    layer.innerHTML = planLayerSVG(duct, { selected: dui.sel, draw: dui.draw, hover: dui.hover, scalePts: dui.scalePts });
+  }
+
+  function deTool(t) {
+    Object.assign(dui, { tool: t, draw: null, hover: null, scalePts: [] });
+    if (t !== 'select') dui.sel = null;
+    deRender();
+  }
+
+  function deFinish() {
+    const d = dui.draw, plan = duct;
+    dui.draw = null;
+    dui.hover = null;
+    if (!d || d.points.length < 2) { deRender(); return; }
+    const end = d.to ? plan.items.find(i => i.id === d.to) : null;
+    const start = d.from ? plan.items.find(i => i.id === d.from) : null;
+    const outlet = [end, start].find(i => i && (i.type === 'supply' || i.type === 'return') && i.size);
+    const size = d.kind === 'duct' ? (outlet ? outlet.size : String(dui.size)) : d.kind === 'drain' ? '20 mm' : '';
+    const run = { id: dUid(), kind: d.kind, size, points: d.points, from: d.from || null, to: d.to || null };
+    plan.runs.push(run);
+    dui.sel = { kind: 'run', id: run.id };
+    ductSave(); deRender();
+  }
+
+  function deCancel() { dui.draw = null; dui.hover = null; deRender(); }
+  function deZoom(f) { if (deCtx && deCtx.zoomAt) deCtx.zoomAt(f, deCtx.center()); }
+  function deFit() { dui.vb = null; deRender(); }
+
+  /* ── Panel: selected item, design check, takeoff ── */
+  function deSetItem(id, k, v, refresh) {
+    const it = duct.items.find(i => i.id === id);
+    const old = it[k];
+    it[k] = v;
+    /* A duct that matched the outlet's old size follows the new size */
+    if (k === 'size') duct.runs.forEach(r => { if (r.kind === 'duct' && (r.to === id || r.from === id) && r.size === old) r.size = v; });
+    ductSave(); deDrawLayer();
+    if (refresh) dePanel();
+  }
+  function deSetRun(id, k, v, refresh) {
+    duct.runs.find(r => r.id === id)[k] = v;
+    ductSave(); deDrawLayer();
+    if (refresh) dePanel();
+  }
+  function deSetField(k, v) { duct[k] = v; ductSave(); dePanel(); }
+
+  function deDeleteSel() {
+    const sel = dui.sel;
+    if (!sel) return;
+    if (sel.kind === 'item') {
+      duct.items = duct.items.filter(i => i.id !== sel.id);
+      duct.runs.forEach(r => { if (r.from === sel.id) r.from = null; if (r.to === sel.id) r.to = null; });
+    } else {
+      duct.runs = duct.runs.filter(r => r.id !== sel.id);
+    }
+    dui.sel = null;
+    ductSave(); deDrawLayer(); dePanel();
+  }
+
+  function deSelectedHTML(plan) {
+    const sel = dui.sel;
+    if (!sel) return '';
+    const sizeOpts = cur => DUCT_SIZES.map(s => `<option ${String(s) === String(cur) ? 'selected' : ''}>${s}</option>`).join('');
+    if (sel.kind === 'item') {
+      const it = plan.items.find(i => i.id === sel.id);
+      if (!it) return '';
+      const sym = PLAN_SYMBOLS[it.type];
+      const sched = planSchedule(plan).find(s => s.it.id === it.id);
+      return `<section class="de-card"><h3>${sym.label} <button type="button" class="de-b danger" onclick="deDeleteSel()">Delete</button></h3>
+        <div class="de-fields">
+          <div><label>${it.type === 'note' ? 'Note' : 'Label'}</label><input value="${dEsc(it.label)}" oninput="deSetItem('${it.id}','label',this.value)" /></div>
+          ${sym.sized ? `<div><label>Size (mm)</label><select onchange="deSetItem('${it.id}','size',this.value,true)">${sizeOpts(it.size)}</select></div>` : ''}
+          ${it.type === 'supply' ? `<div><label>Airflow (L/s)</label><input type="number" inputmode="decimal" min="0" value="${dEsc(it.airflow)}" placeholder="${AIRFLOW_BY_SIZE[it.size] || ''} typical" onchange="deSetItem('${it.id}','airflow',this.value,true)" /></div>` : ''}
+          <div><label>Notes</label><input value="${dEsc(it.note)}" placeholder="e.g. Bed 2, centre of ceiling" oninput="deSetItem('${it.id}','note',this.value)" /></div>
+        </div>
+        ${sched && sched.run ? `<p class="de-muted">Fed by a ${sched.size} mm duct${sched.len ? `, ${dRnd(sched.len)} m long` : ''}${sched.v && it.type === 'supply' ? ` · air speed ${dRnd(sched.v)} m/s${sched.v > MAX_DUCT_VELOCITY ? ' <span class="de-warn">— likely noisy, use a larger duct</span>' : ''}` : ''}</p>` : ''}
+      </section>`;
+    }
+    const r = plan.runs.find(x => x.id === sel.id);
+    if (!r) return '';
+    const name = id => (plan.items.find(i => i.id === id) || {}).label || '';
+    return `<section class="de-card"><h3>${RUN_KINDS[r.kind].label} run <button type="button" class="de-b danger" onclick="deDeleteSel()">Delete</button></h3>
+      <div class="de-fields">
+        <div><label>Size</label>${r.kind === 'duct'
+          ? `<select onchange="deSetRun('${r.id}','size',this.value,true)">${sizeOpts(r.size)}</select>`
+          : `<input value="${dEsc(r.size)}" placeholder="${r.kind === 'pipe' ? 'e.g. 1/4&quot; + 1/2&quot;' : 'e.g. 20 mm'}" oninput="deSetRun('${r.id}','size',this.value)" />`}</div>
+        <div><label>Length</label><div class="de-val">${plan.scale ? dRnd(runLength(plan, r)) + ' m' : 'Set the scale to measure'}</div></div>
+      </div>
+      ${name(r.from) || name(r.to) ? `<p class="de-muted">${dEsc([name(r.from), name(r.to)].filter(Boolean).join(' → '))}</p>` : ''}
+    </section>`;
+  }
+
+  function dePanel() {
+    const el = dEl('de-panel');
+    if (!el || !duct) return;
+    const plan = duct;
+    const s = ductStats(plan);
+    const sysQ = parseFloat(plan.systemAirflow) || 0;
+    const takeoff = ductTakeoff(plan);
+    el.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px">
+      ${deSelectedHTML(plan)}
+      <section class="de-card">
+        <h3>Design check</h3>
+        <div class="de-fields">
+          <div><label>Unit airflow (L/s)</label><input type="number" inputmode="decimal" min="0" value="${dEsc(plan.systemAirflow)}" placeholder="From the spec sheet" onchange="deSetField('systemAirflow', this.value)" /></div>
+          <div><label>Scale</label><div class="de-val">${plan.scale ? 'Set' : '<span class="de-warn">Not set</span>'} · <button type="button" class="de-link" onclick="deTool('scale')">${plan.scale ? 'reset' : 'set scale'}</button></div></div>
+        </div>
+        <p class="de-muted">${plural(s.supply.length, 'supply outlet')} · ${Math.round(s.totalQ)} L/s total${sysQ ? ` of ${Math.round(sysQ)} L/s unit airflow${Math.abs(s.totalQ - sysQ) / sysQ > 0.15 ? ` <span class="de-warn">— outlets ${s.totalQ > sysQ ? 'exceed' : 'are well under'} the unit airflow</span>` : ''}` : ''}</p>
+        ${s.sched.length ? `<div class="de-tbl-wrap"><table class="de-tbl">
+          <thead><tr><th>Outlet</th><th class="num">Size</th><th class="num">Airflow</th><th class="num">Duct</th><th class="num">Length</th><th class="num">Speed</th></tr></thead>
+          <tbody>${s.sched.map(x => `<tr class="click" onclick="dui.sel={kind:'item',id:'${x.it.id}'}; deDrawLayer(); dePanel(); dEl('duct-editor').scrollTo({top:0,behavior:'smooth'})">
+            <td>${dEsc(x.it.label || PLAN_SYMBOLS[x.it.type].label)}${x.it.note ? `<div class="de-muted">${dEsc(x.it.note)}</div>` : ''}</td>
+            <td class="num">${x.it.size || ''}</td>
+            <td class="num">${x.it.type === 'supply' ? Math.round(x.q) + ' L/s' : ''}</td>
+            <td class="num">${x.run ? x.size + ' mm' : '<span class="de-warn">no duct</span>'}</td>
+            <td class="num">${x.len ? dRnd(x.len) + ' m' : ''}</td>
+            <td class="num ${x.v > MAX_DUCT_VELOCITY ? 'over' : ''}">${x.v && x.it.type === 'supply' ? dRnd(x.v) + ' m/s' : ''}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>` : ''}
+        <p class="de-muted">Airflow defaults are typical values for each outlet size and the noise limit is ${MAX_DUCT_VELOCITY} m/s. This is a guide for the layout, not a full duct design.</p>
+      </section>
+      <section class="de-card">
+        <h3>Material takeoff</h3>
+        ${takeoff.length ? `<div class="de-list">${takeoff.map(m => `<div><span>${dEsc(m.name)}</span><span><b>${m.qty}</b> ${dEsc(m.unit)}</span></div>`).join('')}</div>`
+          : '<p class="de-muted">Place outlets and draw runs to build the takeoff.</p>'}
+        ${!plan.scale && plan.runs.length ? '<p class="de-muted de-warn">Set the scale so duct and pipe lengths are measured.</p>' : ''}
+        ${takeoff.length ? `<div class="de-row"><button type="button" class="de-b pri" onclick="ductToInspection()">Add to preinspection</button></div>` : ''}
+      </section>
+    </div>`;
+  }
+
+  /* ── Sending: summary text for the email and a drawing for the PDF ── */
+  function ductMessage(standalone) {
+    if (!duct) return '';
+    const s = ductStats();
+    const m = n => Math.ceil(n) + ' m';
+    const lines = ['── DUCT LAYOUT ──',
+      `Supply Outlets:      ${s.supply.length}${s.supply.length ? ` (${Math.round(s.totalQ)} L/s)` : ''}`,
+      `Return Air:          ${s.returns}`,
+      `Unit Airflow:        ${duct.systemAirflow ? duct.systemAirflow + ' L/s' : '—'}`];
+    if (!duct.scale) lines.push(`Lengths:             Not measured (scale not set)`);
+    else {
+      if (s.ductRuns) lines.push(`Duct:                ${s.ductM} m (${s.bySize.join(', ')})`);
+      if (s.pipe) lines.push(`Refrigerant Pipe:    ${m(s.pipe)}`);
+      if (s.drain) lines.push(`Drain:               ${m(s.drain)}`);
+    }
+    if (s.noisy) lines.push(`Check:               ${plural(s.noisy, 'outlet')} over ${MAX_DUCT_VELOCITY} m/s air speed`);
+    if (s.unducted) lines.push(`Check:               ${plural(s.unducted, 'outlet')} without a duct run`);
+    if (!standalone) lines.push('Drawing:             See the attached PDF');
+    return lines.join('\n');
+  }
+
+  function dImg(src) {
+    return new Promise((resolve, reject) => { const i = new Image(); i.onload = () => resolve(i); i.onerror = reject; i.src = src; });
+  }
+
+  async function ductImage(maxPx, quality) {
+    const s = Math.min(1, maxPx / Math.max(duct.w, duct.h));
+    const c = document.createElement('canvas');
+    c.width = Math.round(duct.w * s);
+    c.height = Math.round(duct.h * s);
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.drawImage(await dImg(duct.photo), 0, 0, c.width, c.height);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${c.width}" height="${c.height}" viewBox="0 0 ${duct.w} ${duct.h}">${planLayerSVG(duct)}</svg>`;
+    ctx.drawImage(await dImg('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)), 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', quality);
+  }
+
+  const DUCT_PDF_BUDGET = 170000; /* base64 characters for the layout drawing in the PDF */
+  async function ductPdfData() {
+    if (!duct) return null;
+    let img = '';
+    try {
+      for (const [px, q] of [[1800, 0.78], [1500, 0.72], [1200, 0.66], [1000, 0.6], [800, 0.55]]) {
+        img = await ductImage(px, q);
+        if (img.length <= DUCT_PDF_BUDGET) break;
+      }
+    } catch (err) {
+      console.error('Layout drawing error:', err);
+      img = '';
+    }
+    const s = ductStats();
+    const pad = (v, n) => String(v).slice(0, n).padEnd(n);
+    const schedule = s.sched.length ? [
+      pad('Outlet', 16) + pad('Size', 7) + pad('Airflow', 10) + pad('Duct', 9) + pad('Length', 9) + 'Notes',
+      ...s.sched.map(x => pad(x.it.label || PLAN_SYMBOLS[x.it.type].label, 16) + pad(x.it.size || '', 7)
+        + pad(x.it.type === 'supply' ? Math.round(x.q) + ' L/s' : '', 10) + pad(x.run ? x.size + ' mm' : 'none', 9)
+        + pad(x.len ? dRnd(x.len) + ' m' : '', 9) + (x.it.note || ''))
+    ] : [];
+    const takeoff = ductTakeoff().map(m => pad(m.name, 48) + ' ' + m.qty + ' ' + m.unit);
+    return { img, schedule, takeoff, caveat: `Airflows are typical values for each outlet size; the noise limit used is ${MAX_DUCT_VELOCITY} m/s. A guide for the layout, not a full duct design.` };
+  }
+
+  /* Start-up: restore a draft left from before the app was closed */
+  ductLoad();
+  ductRenderSummary();
+  ductRenderInspNote();
 </script>
 </body>
 </html>
