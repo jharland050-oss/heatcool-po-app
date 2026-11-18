@@ -2251,7 +2251,7 @@
   const FLEX_LENGTH = 6;       /* m per length of flexible duct */
 
   let duct = null;
-  const dui = { tool: 'select', symbol: 'supply', size: '200', sel: null, draw: null, hover: null, scalePts: [], vb: null };
+  const dui = { tool: 'select', symbol: 'supply', size: '200', curve: false, sel: null, draw: null, hover: null, scalePts: [], vb: null };
   let deCtx = null;
 
   const dEsc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -2309,9 +2309,7 @@
 
   function runLength(plan, r) {
     if (!plan.scale) return 0;
-    let px = 0;
-    for (let i = 1; i < r.points.length; i++) px += Math.hypot(r.points[i][0] - r.points[i - 1][0], r.points[i][1] - r.points[i - 1][1]);
-    return px / plan.scale;
+    return runSegs(r.points, r.curve).reduce((n, sg) => n + polyLen(sg), 0) / plan.scale;
   }
   const itemAirflow = it => parseFloat(it.airflow) || AIRFLOW_BY_SIZE[it.size] || 0;
   const ductVelocity = (lps, mm) => lps && mm ? (lps / 1000) / (Math.PI * Math.pow(mm / 2000, 2)) : 0;
@@ -2426,13 +2424,23 @@
   }
 
   /* ── Drawing the overlay (shared by the editor, the form preview and the PDF) ── */
+  /* Half width / half height of a symbol before rotation (used for labels, selection and tapping) */
+  function itemBox(plan, it) {
+    const R = planR(plan), rad = (it.angle || 0) * Math.PI / 180;
+    const box = { supply: [R, R], return: [R * 1.2, R * 0.8], indoor: [R * 1.7, R * 1.05], outdoor: [R * 1.4, R * 1.4], note: [R * 1.5, R * 0.6] }[it.type];
+    if (it.type === 'linear') { const g = linearGeom(plan, it); return { hw: g.L / 2, hh: g.W / 2, rad }; }
+    return { hw: box ? box[0] : R * 0.85, hh: box ? box[1] : R * 0.85, rad };
+  }
+
   function planItemSVG(plan, it, selected) {
     const R = planR(plan), sym = PLAN_SYMBOLS[it.type] || PLAN_SYMBOLS.note, c = sym.color, sw = R * 0.14;
     const halo = `stroke="#fff" stroke-width="${R * 0.32}" paint-order="stroke" stroke-linejoin="round"`;
     const text = (t, x, y, size = R * 0.8, fill = '#111') =>
       `<text x="${x}" y="${y}" font-size="${size}" text-anchor="middle" dominant-baseline="central" font-family="Outfit, Arial, sans-serif" font-weight="600" fill="${fill}" ${halo}>${dEsc(t)}</text>`;
     const { x, y } = it;
-    let shape = '', below = '';
+    const angle = it.angle || 0;
+    /* shape rotates with the symbol; inner lettering stays upright */
+    let shape = '', inner = '', below = '';
     switch (it.type) {
       case 'supply':
         shape = `<circle cx="${x}" cy="${y}" r="${R}" fill="${c}" fill-opacity="0.18" stroke="${c}" stroke-width="${sw}"/>
@@ -2443,12 +2451,10 @@
         const g = linearGeom(plan, it), n = Math.min(4, Math.max(1, parseInt(it.slots, 10) || 2));
         let slots = '';
         for (let i = 1; i <= n; i++) { const sy = y - g.W / 2 + g.W * i / (n + 1); slots += `M${x - g.L / 2 + R * 0.25} ${sy}H${x + g.L / 2 - R * 0.25}`; }
-        shape = `<g transform="rotate(${it.angle || 0} ${x} ${y})"><rect x="${x - g.L / 2}" y="${y - g.W / 2}" width="${g.L}" height="${g.W}" rx="${R * 0.12}" fill="${c}" fill-opacity="0.18" stroke="${c}" stroke-width="${sw}"/>
-          <path d="${slots}" stroke="${c}" stroke-width="${sw * 0.8}"/></g>`;
+        shape = `<rect x="${x - g.L / 2}" y="${y - g.W / 2}" width="${g.L}" height="${g.W}" rx="${R * 0.12}" fill="${c}" fill-opacity="0.18" stroke="${c}" stroke-width="${sw}"/>
+          <path d="${slots}" stroke="${c}" stroke-width="${sw * 0.8}"/>`;
         below = `${it.label || ''}${it.size ? ' · ' + it.size : ''}`;
-        const dy = (Math.abs(g.L * Math.sin(g.rad)) + g.W * Math.abs(Math.cos(g.rad))) / 2 + R * 0.75;
-        const ring = selected ? `<circle cx="${x}" cy="${y}" r="${Math.max(R * 2, g.L / 2 + R * 0.6)}" fill="none" stroke="#1aaee6" stroke-width="${R * 0.22}" stroke-dasharray="${R * 0.5} ${R * 0.3}"/>` : '';
-        return `<g>${ring}${shape}${below ? text(below, x, y + dy, R * 0.75) : ''}</g>`;
+        break;
       }
       case 'return':
         shape = `<rect x="${x - R * 1.2}" y="${y - R * 0.8}" width="${R * 2.4}" height="${R * 1.6}" rx="${R * 0.15}" fill="${c}" fill-opacity="0.18" stroke="${c}" stroke-width="${sw}"/>
@@ -2456,44 +2462,82 @@
         below = `${it.label || ''}${it.size ? ' · ' + it.size : ''}`;
         break;
       case 'indoor':
-        shape = `<rect x="${x - R * 1.7}" y="${y - R * 1.05}" width="${R * 3.4}" height="${R * 2.1}" rx="${R * 0.25}" fill="${c}" fill-opacity="0.2" stroke="${c}" stroke-width="${sw}"/>${text('IU', x, y, R * 0.9, c)}`;
+        shape = `<rect x="${x - R * 1.7}" y="${y - R * 1.05}" width="${R * 3.4}" height="${R * 2.1}" rx="${R * 0.25}" fill="${c}" fill-opacity="0.2" stroke="${c}" stroke-width="${sw}"/>
+          <path d="M${x - R * 1.4} ${y + R * 0.75}H${x + R * 1.4}" stroke="${c}" stroke-width="${sw * 0.8}"/>`;
+        inner = text('IU', x, y - R * 0.1, R * 0.9, c);
         below = it.label && it.label !== 'IU' ? it.label : '';
         break;
       case 'outdoor':
         shape = `<rect x="${x - R * 1.4}" y="${y - R * 1.4}" width="${R * 2.8}" height="${R * 2.8}" rx="${R * 0.2}" fill="#fff" fill-opacity="0.85" stroke="${c}" stroke-width="${sw}"/>
-          <circle cx="${x}" cy="${y}" r="${R * 0.95}" fill="none" stroke="${c}" stroke-width="${sw}"/>${text('ODU', x, y, R * 0.6, c)}`;
+          <circle cx="${x}" cy="${y}" r="${R * 0.95}" fill="none" stroke="${c}" stroke-width="${sw}"/>`;
+        inner = text('ODU', x, y, R * 0.6, c);
         below = it.label && it.label !== 'ODU' ? it.label : '';
         break;
       case 'note':
         shape = text(it.label || 'Note', x, y, R * 0.9);
         break;
       default:
-        shape = `<circle cx="${x}" cy="${y}" r="${R * 0.85}" fill="#fff" stroke="${c}" stroke-width="${sw}"/>${text(sym.short, x, y, sym.short.length > 1 ? R * 0.5 : R * 0.8, c)}`;
+        shape = `<circle cx="${x}" cy="${y}" r="${R * 0.85}" fill="#fff" stroke="${c}" stroke-width="${sw}"/>
+          <path d="M${x} ${y - R * 0.85}v${-R * 0.3}" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>`;
+        inner = text(sym.short, x, y, sym.short.length > 1 ? R * 0.5 : R * 0.8, c);
         below = it.label && it.label !== sym.short ? it.label : '';
     }
-    const ring = selected ? `<circle cx="${x}" cy="${y}" r="${R * 2}" fill="none" stroke="#1aaee6" stroke-width="${R * 0.22}" stroke-dasharray="${R * 0.5} ${R * 0.3}"/>` : '';
-    return `<g>${ring}${shape}${below ? text(below, x, y + R * (it.type === 'outdoor' ? 2.2 : it.type === 'indoor' ? 1.9 : 1.8), R * 0.75) : ''}</g>`;
+    const b = itemBox(plan, it);
+    const ext = b.hw * Math.abs(Math.sin(b.rad)) + b.hh * Math.abs(Math.cos(b.rad));
+    const ring = selected ? `<circle cx="${x}" cy="${y}" r="${Math.max(R * 2, Math.hypot(b.hw, b.hh) + R * 0.6)}" fill="none" stroke="#1aaee6" stroke-width="${R * 0.22}" stroke-dasharray="${R * 0.5} ${R * 0.3}"/>` : '';
+    const body = angle ? `<g transform="rotate(${angle} ${x} ${y})">${shape}</g>` : shape;
+    return `<g>${ring}${body}${inner}${below ? text(below, x, y + ext + R * 0.8, R * 0.75) : ''}</g>`;
   }
+
+  /* A run is straight segments, or a smooth curve through the tapped points (Catmull-Rom drawn as cubic Béziers) */
+  function bezierCtrl(pts, i) {
+    const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    return [[p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6]];
+  }
+  function runPathD(pts, curve) {
+    if (!curve || pts.length < 3) return 'M' + pts.map(p => p.join(' ')).join('L');
+    let d = `M${pts[0][0]} ${pts[0][1]}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [c1, c2] = bezierCtrl(pts, i);
+      d += `C${dRnd(c1[0])} ${dRnd(c1[1])} ${dRnd(c2[0])} ${dRnd(c2[1])} ${pts[i + 1][0]} ${pts[i + 1][1]}`;
+    }
+    return d;
+  }
+  /* Each segment between tapped points as a list of points (sampled along the curve when curved) */
+  function runSegs(pts, curve) {
+    const out = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      if (!curve || pts.length < 3) { out.push([pts[i], pts[i + 1]]); continue; }
+      const [c1, c2] = bezierCtrl(pts, i), a = pts[i], b = pts[i + 1], seg = [];
+      for (let k = 0; k <= 16; k++) {
+        const t = k / 16, u = 1 - t;
+        seg.push([u * u * u * a[0] + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t * t * t * b[0],
+                  u * u * u * a[1] + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t * t * t * b[1]]);
+      }
+      out.push(seg);
+    }
+    return out;
+  }
+  const polyLen = seg => seg.reduce((n, p, i) => i ? n + Math.hypot(p[0] - seg[i - 1][0], p[1] - seg[i - 1][1]) : 0, 0);
 
   function planRunSVG(plan, r, selected) {
     if (r.points.length < 2) return '';
     const R = planR(plan), k = RUN_KINDS[r.kind] || RUN_KINDS.duct, col = runColor(r);
-    const pts = r.points.map(pt => pt.join(',')).join(' ');
+    const d = runPathD(r.points, r.curve);
     const w = r.kind === 'duct' ? R * 0.12 + R * 0.28 * ((parseInt(r.size, 10) || 200) / 200) : R * 0.18;
     /* Label on the longest segment */
-    let best = 1, bestLen = 0;
-    for (let i = 1; i < r.points.length; i++) {
-      const l = Math.hypot(r.points[i][0] - r.points[i - 1][0], r.points[i][1] - r.points[i - 1][1]);
-      if (l > bestLen) { bestLen = l; best = i; }
-    }
-    const [ax, ay] = r.points[best - 1], [bx, by] = r.points[best];
+    const segs = runSegs(r.points, r.curve);
+    let best = 0;
+    segs.forEach((sg, i) => { if (polyLen(sg) > polyLen(segs[best])) best = i; });
+    const sg = segs[best];
+    const [mx, my] = sg.length === 2 ? [(sg[0][0] + sg[1][0]) / 2, (sg[0][1] + sg[1][1]) / 2] : sg[Math.floor(sg.length / 2)];
     const len = runLength(plan, r);
     const label = [r.kind === 'duct' ? (r.size ? r.size + ' mm' : '') : (r.size || ''), len ? dRnd(len) + ' m' : ''].filter(Boolean).join(' · ');
     const halo = `stroke="#fff" stroke-width="${R * 0.3}" paint-order="stroke" stroke-linejoin="round"`;
     return `<g>
-      ${selected ? `<polyline points="${pts}" fill="none" stroke="#1aaee6" stroke-opacity="0.55" stroke-width="${w + R * 0.45}" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
-      <polyline points="${pts}" fill="none" stroke="${col.line}" stroke-opacity="0.95" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" ${k.dash ? `stroke-dasharray="${R * 0.6} ${R * 0.4}"` : ''}/>
-      ${label ? `<text x="${(ax + bx) / 2}" y="${(ay + by) / 2 - R * 0.6}" font-size="${R * 0.65}" text-anchor="middle" font-family="Outfit, Arial, sans-serif" font-weight="600" fill="${col.text}" ${halo}>${dEsc(label)}</text>` : ''}
+      ${selected ? `<path d="${d}" fill="none" stroke="#1aaee6" stroke-opacity="0.55" stroke-width="${w + R * 0.45}" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
+      <path d="${d}" fill="none" stroke="${col.line}" stroke-opacity="0.95" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" ${k.dash ? `stroke-dasharray="${R * 0.6} ${R * 0.4}"` : ''}/>
+      ${label ? `<text x="${mx}" y="${my - R * 0.6}" font-size="${R * 0.65}" text-anchor="middle" font-family="Outfit, Arial, sans-serif" font-weight="600" fill="${col.text}" ${halo}>${dEsc(label)}</text>` : ''}
       ${selected ? r.points.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${R * 0.45}" fill="#fff" stroke="#1aaee6" stroke-width="${R * 0.15}"/>`).join('') : ''}
     </g>`;
   }
@@ -2506,7 +2550,7 @@
     if (d && d.points.length) {
       const k = { color: runColor({ kind: d.kind, size: dui.size }).line };
       const pts = [...d.points, ...(opts.hover ? [[opts.hover.x, opts.hover.y]] : [])];
-      out += `<polyline points="${pts.map(p => p.join(',')).join(' ')}" fill="none" stroke="${k.color}" stroke-width="${R * 0.3}" stroke-dasharray="${R * 0.4} ${R * 0.3}" stroke-linecap="round"/>`
+      out += `<path d="${runPathD(pts, d.curve)}" fill="none" stroke="${k.color}" stroke-width="${R * 0.3}" stroke-dasharray="${R * 0.4} ${R * 0.3}" stroke-linecap="round"/>`
         + d.points.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${R * 0.35}" fill="${k.color}"/>`).join('');
     }
     (opts.scalePts || []).forEach(([x, y]) => { out += `<circle cx="${x}" cy="${y}" r="${R * 0.5}" fill="#c62828" stroke="#fff" stroke-width="${R * 0.15}"/>`; });
@@ -2717,6 +2761,7 @@
     const hints = {
       select: 'Tap something to edit it. Drag symbols, or the white points on a selected run, to move them. Drag the plan to move around; pinch to zoom.',
       symbol: `Tap the plan to place a ${PLAN_SYMBOLS[dui.symbol].label.toLowerCase()}.`,
+      curve: 'Tap points along the bend — the duct curves smoothly through them. Tap the outlet to finish.',
       duct: dui.draw ? 'Tap each corner, then tap an outlet to finish (or tap Finish).' : 'Start on the unit or plenum, tap each corner, then tap the outlet.',
       pipe: dui.draw ? 'Tap each corner, then tap the other unit to finish.' : 'Tap the indoor unit, each corner, then the outdoor unit.',
       drain: dui.draw ? 'Tap each corner, then tap Finish.' : 'Tap where the drain starts, each corner, then Finish.',
@@ -2735,6 +2780,7 @@
         `<button type="button" class="de-b ${dui.symbol === k ? 'on' : ''}" onclick="dui.symbol='${k}'; deRender()">${s.label}</button>`).join('')}</div>` : ''}
       ${drawing ? `<div class="de-row">
         ${tool === 'duct' ? `<span class="de-muted">Duct size</span>${DUCT_SIZES.map(s => `<button type="button" class="de-b ${String(dui.size) === String(s) ? 'on' : ''}" onclick="dui.size='${s}'; deRender()"><i class="de-sw" style="background:${ductColor(s).line}"></i>${s}</button>`).join('')}` : ''}
+        <span class="de-muted" style="margin-left:4px">Shape</span><button type="button" class="de-b ${dui.curve ? '' : 'on'}" onclick="deCurve(false)">Straight</button><button type="button" class="de-b ${dui.curve ? 'on' : ''}" onclick="deCurve(true)">Curved</button>
         ${dui.draw ? `<button type="button" class="de-b pri" onclick="deFinish()">Finish</button><button type="button" class="de-b" onclick="deCancel()">Cancel</button>` : ''}
       </div>` : ''}
       <div class="de-wrap ${tool === 'select' ? '' : 'draw'}" style="aspect-ratio: ${plan.w} / ${plan.h}">
@@ -2750,7 +2796,7 @@
         <button type="button" class="de-b round" aria-label="Larger symbols" onclick="deSymSize(1.25)">+</button>
         ${(plan.symScale || 1) !== 1 ? `<button type="button" class="de-b" onclick="deSymSize(0)">Reset</button>` : ''}
         <span style="flex:1"></span>${ductKeyHTML(plan)}</div>
-      <div class="de-hint">${hints[tool]}${tool === 'duct' && !dui.draw ? ' Ending on an outlet uses the outlet’s size.' : ''}</div>
+      <div class="de-hint">${drawing && dui.curve ? hints.curve.replace('the duct', 'it').replace('Tap the outlet', tool === 'duct' ? 'Tap the outlet' : 'Tap Finish') : hints[tool]}${tool === 'duct' && !dui.draw ? ' Ending on an outlet uses the outlet’s size.' : ''}</div>
       <div id="de-panel"></div>
     </div>`;
     dEl('de-img').setAttribute('href', plan.photo);
@@ -2887,15 +2933,13 @@
     for (let i = plan.items.length - 1; i >= 0; i--) {
       const it = plan.items[i];
       if (Math.hypot(it.x - pt.x, it.y - pt.y) <= Math.max(tol, R * 1.5)) return { type: 'item', it };
-      if (it.type === 'linear') {
-        const g = linearGeom(plan, it), dx = pt.x - it.x, dy = pt.y - it.y;
-        const lx = dx * Math.cos(g.rad) + dy * Math.sin(g.rad), ly = -dx * Math.sin(g.rad) + dy * Math.cos(g.rad);
-        if (Math.abs(lx) <= g.L / 2 + tol && Math.abs(ly) <= g.W / 2 + tol) return { type: 'item', it };
-      }
+      const g = itemBox(plan, it), dx = pt.x - it.x, dy = pt.y - it.y;
+      const lx = dx * Math.cos(g.rad) + dy * Math.sin(g.rad), ly = -dx * Math.sin(g.rad) + dy * Math.cos(g.rad);
+      if (Math.abs(lx) <= g.hw + tol && Math.abs(ly) <= g.hh + tol) return { type: 'item', it };
     }
     for (let i = plan.runs.length - 1; i >= 0; i--) {
       const r = plan.runs[i];
-      for (let j = 1; j < r.points.length; j++) if (segDist(pt, r.points[j - 1], r.points[j]) <= Math.max(tol, R * 0.5)) return { type: 'run', run: r };
+      for (const sg of runSegs(r.points, r.curve)) for (let j = 1; j < sg.length; j++) if (segDist(pt, sg[j - 1], sg[j]) <= Math.max(tol, R * 0.5)) return { type: 'run', run: r };
     }
     return null;
   }
@@ -2938,7 +2982,7 @@
       const snap = plan.items.slice().reverse().find(it => Math.hypot(it.x - pt.x, it.y - pt.y) <= Math.max(tol, R * 1.5));
       const point = snap ? [snap.x, snap.y] : [pt.x, pt.y];
       if (!dui.draw) {
-        dui.draw = { kind: tool, points: [point], from: snap ? snap.id : null };
+        dui.draw = { kind: tool, points: [point], from: snap ? snap.id : null, curve: !!dui.curve };
         deRender();
         return;
       }
@@ -2969,7 +3013,7 @@
     const start = d.from ? plan.items.find(i => i.id === d.from) : null;
     const outlet = [end, start].find(i => i && (isSupply(i) || i.type === 'return') && i.size);
     const size = d.kind === 'duct' ? (outlet ? outlet.size : String(dui.size)) : d.kind === 'drain' ? '20 mm' : '';
-    const run = { id: dUid(), kind: d.kind, size, points: d.points, from: d.from || null, to: d.to || null };
+    const run = { id: dUid(), kind: d.kind, size, points: d.points, from: d.from || null, to: d.to || null, curve: !!d.curve };
     plan.runs.push(run);
     dui.sel = { kind: 'run', id: run.id };
     ductSave(); deRender();
@@ -2987,6 +3031,12 @@
   function ductKeyHTML(plan) {
     return ductSizesUsed(plan).map(s => `<span class="de-key"><i class="de-sw" style="background:${ductColor(s).line}"></i>${s}</span>`).join('');
   }
+
+  function deRotate(id, by) {
+    const it = duct.items.find(i => i.id === id);
+    deSetItem(id, 'angle', (((it.angle || 0) + by) % 360 + 360) % 360, true);
+  }
+  function deCurve(on) { dui.curve = on; if (dui.draw) dui.draw.curve = on; deRender(); }
 
   function deCancel() { dui.draw = null; dui.hover = null; deRender(); }
   function deZoom(f) { if (deCtx && deCtx.zoomAt) deCtx.zoomAt(f, deCtx.center()); }
@@ -3036,11 +3086,14 @@
           <div><label>${it.type === 'note' ? 'Note' : 'Label'}</label><input value="${dEsc(it.label)}" oninput="deSetItem('${it.id}','label',this.value)" /></div>
           ${it.type === 'linear' ? `<div><label>Length (mm)</label><select onchange="deSetItem('${it.id}','length',this.value,true)">${LINEAR_LENGTHS.map(l => `<option ${String(l) === String(it.length) ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
             <div><label>Slots</label><select onchange="deSetItem('${it.id}','slots',this.value,true)">${[1, 2, 3, 4].map(n => `<option ${String(n) === String(it.slots) ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
-            <div><label>Direction</label><button type="button" class="de-b" style="width:100%;min-height:44px" onclick="deSetItem('${it.id}','angle',((${it.angle || 0}) + 45) % 180,true)">Rotate 45°</button></div>` : ''}
+` : ''}
           ${sym.sized ? `<div><label>${it.type === 'linear' ? 'Spigot (mm)' : 'Size (mm)'}</label><select onchange="deSetItem('${it.id}','size',this.value,true)">${sizeOpts(it.size)}</select></div>` : ''}
           ${isSupply(it) ? `<div><label>Airflow (L/s)</label><input type="number" inputmode="decimal" min="0" value="${dEsc(it.airflow)}" placeholder="${AIRFLOW_BY_SIZE[it.size] || ''} typical" onchange="deSetItem('${it.id}','airflow',this.value,true)" /></div>` : ''}
           <div><label>Notes</label><input value="${dEsc(it.note)}" placeholder="e.g. Bed 2, centre of ceiling" oninput="deSetItem('${it.id}','note',this.value)" /></div>
         </div>
+        <div class="de-row"><span class="de-muted">Rotate · ${it.angle || 0}°</span>
+          <button type="button" class="de-b" onclick="deRotate('${it.id}', -45)">↺ 45°</button><button type="button" class="de-b" onclick="deRotate('${it.id}', -15)">↺ 15°</button>
+          <button type="button" class="de-b" onclick="deRotate('${it.id}', 15)">↻ 15°</button><button type="button" class="de-b" onclick="deRotate('${it.id}', 45)">↻ 45°</button></div>
         ${sched && sched.run ? `<p class="de-muted">Fed by a ${sched.size} mm duct${sched.len ? `, ${dRnd(sched.len)} m long` : ''}${sched.v && isSupply(it) ? ` · air speed ${dRnd(sched.v)} m/s${sched.v > MAX_DUCT_VELOCITY ? ' <span class="de-warn">— likely noisy, use a larger duct</span>' : ''}` : ''}</p>` : ''}
       </section>`;
     }
@@ -3054,6 +3107,10 @@
           : `<input value="${dEsc(r.size)}" placeholder="${r.kind === 'pipe' ? 'e.g. 1/4&quot; + 1/2&quot;' : 'e.g. 20 mm'}" oninput="deSetRun('${r.id}','size',this.value)" />`}</div>
         <div><label>Length</label><div class="de-val">${plan.scale ? dRnd(runLength(plan, r)) + ' m' : 'Set the scale to measure'}</div></div>
       </div>
+      <div class="de-row"><span class="de-muted">Shape</span>
+        <button type="button" class="de-b ${r.curve ? '' : 'on'}" onclick="deSetRun('${r.id}','curve',false,true)">Straight</button>
+        <button type="button" class="de-b ${r.curve ? 'on' : ''}" onclick="deSetRun('${r.id}','curve',true,true)">Curved</button>
+        ${r.points.length < 3 ? '<span class="de-muted">Drag a point or redraw with a middle point to bend it</span>' : ''}</div>
       ${name(r.from) || name(r.to) ? `<p class="de-muted">${dEsc([name(r.from), name(r.to)].filter(Boolean).join(' → '))}</p>` : ''}
     </section>`;
   }
