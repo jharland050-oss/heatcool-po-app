@@ -1,4 +1,4 @@
-const CACHE = 'hcm-po-v8';
+const CACHE = 'hcm-po-v10';
 const SHELL = [
   './manifest.json',
   './icons/icon-192.png',
