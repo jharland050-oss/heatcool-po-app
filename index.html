@@ -2277,11 +2277,13 @@
   const LINEAR_LENGTHS = [600, 900, 1200, 1500, 1800, 2400, 3000];
   /* A linear diffuser is drawn to its real length once the scale is set */
   function linearGeom(plan, it) {
-    const R = planR(plan);
+    const R = itemR(plan, it);
     const L = plan.scale && parseFloat(it.length) ? Math.max(R * 1.6, parseFloat(it.length) / 1000 * plan.scale) : R * 4.5;
     return { L, W: R * 0.9, rad: (it.angle || 0) * Math.PI / 180 };
   }
   const planR = plan => Math.max(plan.w, plan.h) / 55 * (plan.symScale || 1);
+  /* One symbol's size: the layout's symbol size times that symbol's own size (it.scale) */
+  const itemR = (plan, it) => planR(plan) * (it.scale || 1);
   const dEl = id => document.getElementById(id);
   const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
@@ -2426,14 +2428,14 @@
   /* ── Drawing the overlay (shared by the editor, the form preview and the PDF) ── */
   /* Half width / half height of a symbol before rotation (used for labels, selection and tapping) */
   function itemBox(plan, it) {
-    const R = planR(plan), rad = (it.angle || 0) * Math.PI / 180;
+    const R = itemR(plan, it), rad = (it.angle || 0) * Math.PI / 180;
     const box = { supply: [R, R], return: [R * 1.2, R * 0.8], indoor: [R * 1.7, R * 1.05], outdoor: [R * 1.4, R * 1.4], note: [R * 1.5, R * 0.6] }[it.type];
     if (it.type === 'linear') { const g = linearGeom(plan, it); return { hw: g.L / 2, hh: g.W / 2, rad }; }
     return { hw: box ? box[0] : R * 0.85, hh: box ? box[1] : R * 0.85, rad };
   }
 
   function planItemSVG(plan, it, selected) {
-    const R = planR(plan), sym = PLAN_SYMBOLS[it.type] || PLAN_SYMBOLS.note, c = sym.color, sw = R * 0.14;
+    const R = itemR(plan, it), sym = PLAN_SYMBOLS[it.type] || PLAN_SYMBOLS.note, c = sym.color, sw = R * 0.14;
     const halo = `stroke="#fff" stroke-width="${R * 0.32}" paint-order="stroke" stroke-linejoin="round"`;
     const text = (t, x, y, size = R * 0.8, fill = '#111') =>
       `<text x="${x}" y="${y}" font-size="${size}" text-anchor="middle" dominant-baseline="central" font-family="Outfit, Arial, sans-serif" font-weight="600" fill="${fill}" ${halo}>${dEsc(t)}</text>`;
@@ -2790,7 +2792,7 @@
           <g id="de-layer"></g>
         </svg>
       </div>
-      <div class="de-row"><span class="de-muted">Symbol size</span>
+      <div class="de-row"><span class="de-muted">All symbols</span>
         <button type="button" class="de-b round" aria-label="Smaller symbols" onclick="deSymSize(1 / 1.25)">−</button>
         <span class="de-muted" style="min-width:44px;text-align:center">${Math.round((plan.symScale || 1) * 100)}%</span>
         <button type="button" class="de-b round" aria-label="Larger symbols" onclick="deSymSize(1.25)">+</button>
@@ -2932,7 +2934,7 @@
     }
     for (let i = plan.items.length - 1; i >= 0; i--) {
       const it = plan.items[i];
-      if (Math.hypot(it.x - pt.x, it.y - pt.y) <= Math.max(tol, R * 1.5)) return { type: 'item', it };
+      if (Math.hypot(it.x - pt.x, it.y - pt.y) <= Math.max(tol, itemR(plan, it) * 1.5)) return { type: 'item', it };
       const g = itemBox(plan, it), dx = pt.x - it.x, dy = pt.y - it.y;
       const lx = dx * Math.cos(g.rad) + dy * Math.sin(g.rad), ly = -dx * Math.sin(g.rad) + dy * Math.cos(g.rad);
       if (Math.abs(lx) <= g.hw + tol && Math.abs(ly) <= g.hh + tol) return { type: 'item', it };
@@ -2979,7 +2981,7 @@
     }
     if (['duct', 'pipe', 'drain'].includes(tool)) {
       const R = planR(plan);
-      const snap = plan.items.slice().reverse().find(it => Math.hypot(it.x - pt.x, it.y - pt.y) <= Math.max(tol, R * 1.5));
+      const snap = plan.items.slice().reverse().find(it => Math.hypot(it.x - pt.x, it.y - pt.y) <= Math.max(tol, itemR(plan, it) * 1.5));
       const point = snap ? [snap.x, snap.y] : [pt.x, pt.y];
       if (!dui.draw) {
         dui.draw = { kind: tool, points: [point], from: snap ? snap.id : null, curve: !!dui.curve };
@@ -3032,6 +3034,12 @@
     return ductSizesUsed(plan).map(s => `<span class="de-key"><i class="de-sw" style="background:${ductColor(s).line}"></i>${s}</span>`).join('');
   }
 
+  function deItemSize(id, f) {
+    const it = duct.items.find(i => i.id === id);
+    let v = f ? Math.min(4, Math.max(0.3, Math.round((it.scale || 1) * f * 100) / 100)) : 1;
+    if (Math.abs(v - 1) < 0.03) v = 1;
+    deSetItem(id, 'scale', v, true);
+  }
   function deRotate(id, by) {
     const it = duct.items.find(i => i.id === id);
     deSetItem(id, 'angle', (((it.angle || 0) + by) % 360 + 360) % 360, true);
@@ -3091,6 +3099,10 @@
           ${isSupply(it) ? `<div><label>Airflow (L/s)</label><input type="number" inputmode="decimal" min="0" value="${dEsc(it.airflow)}" placeholder="${AIRFLOW_BY_SIZE[it.size] || ''} typical" onchange="deSetItem('${it.id}','airflow',this.value,true)" /></div>` : ''}
           <div><label>Notes</label><input value="${dEsc(it.note)}" placeholder="e.g. Bed 2, centre of ceiling" oninput="deSetItem('${it.id}','note',this.value)" /></div>
         </div>
+        <div class="de-row"><span class="de-muted">Size · ${Math.round((it.scale || 1) * 100)}%</span>
+          <button type="button" class="de-b round" aria-label="Smaller" onclick="deItemSize('${it.id}', 1 / 1.2)">−</button>
+          <button type="button" class="de-b round" aria-label="Larger" onclick="deItemSize('${it.id}', 1.2)">+</button>
+          ${(it.scale || 1) !== 1 ? `<button type="button" class="de-b" onclick="deItemSize('${it.id}', 0)">Reset</button>` : ''}</div>
         <div class="de-row"><span class="de-muted">Rotate · ${it.angle || 0}°</span>
           <button type="button" class="de-b" onclick="deRotate('${it.id}', -45)">↺ 45°</button><button type="button" class="de-b" onclick="deRotate('${it.id}', -15)">↺ 15°</button>
           <button type="button" class="de-b" onclick="deRotate('${it.id}', 15)">↻ 15°</button><button type="button" class="de-b" onclick="deRotate('${it.id}', 45)">↻ 45°</button></div>
